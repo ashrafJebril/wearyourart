@@ -8,6 +8,9 @@ import { StoreProvider } from '@/components/providers/StoreProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
+// Force dynamic rendering - API data needed at runtime
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'HOODIE - Custom 3D Apparel Design',
   description: 'Premium custom hoodies designed by you. Upload your artwork, see it in 3D, and wear your creativity.',
