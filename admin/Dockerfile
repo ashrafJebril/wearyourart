@@ -17,6 +17,6 @@ RUN npm install -g serve
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 3002
+EXPOSE 8080
 
-CMD ["serve", "-s", "dist", "-l", "3002"]
+CMD serve -s dist -l ${PORT:-8080}
