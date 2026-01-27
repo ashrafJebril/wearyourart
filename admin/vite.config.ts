@@ -12,5 +12,6 @@ export default defineConfig({
   server: {
     port: 3002,
     host: true,
+    allowedHosts: ['wearyourart-3x2g3.ondigitalocean.app', '.ondigitalocean.app'],
   },
 });
