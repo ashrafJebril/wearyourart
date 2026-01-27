@@ -1,9 +1,10 @@
 import { getAllCategories, getAllProducts } from '@/lib/api/client'
 import { Header } from './Header'
+import { Category, Product } from '@/lib/types'
 
 export async function HeaderWrapper() {
-  let categories = []
-  let customizableProducts = []
+  let categories: Category[] = []
+  let customizableProducts: Product[] = []
 
   try {
     const [fetchedCategories, productsResponse] = await Promise.all([
