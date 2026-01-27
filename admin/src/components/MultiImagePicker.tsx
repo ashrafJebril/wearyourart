@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { uploadApi, MediaImage } from '../api/upload';
-import { Upload, Image, X, Check, GripVertical } from 'lucide-react';
+import { Upload, Image, X } from 'lucide-react';
 
 interface MultiImagePickerProps {
   value: string[];
