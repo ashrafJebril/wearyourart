@@ -13,7 +13,7 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
   // Enable CORS for frontend, admin panel, and mobile app
-  const allowedOrigins = [
+  const allowedOrigins: string[] = [
     'http://localhost:3000',
     'http://localhost:3002',
     'http://localhost:3003',
@@ -23,7 +23,7 @@ async function bootstrap() {
     'http://localhost:19006', // Expo web alternate port
     process.env.ADMIN_URL,
     process.env.HOODIE_URL,
-  ].filter(Boolean);
+  ].filter((origin): origin is string => Boolean(origin));
 
   app.enableCors({
     origin: allowedOrigins,
