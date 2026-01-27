@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  image       String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id                 String        @id @default(uuid())
+  name               String
+  slug               String        @unique
+  description        String?
+  basePrice          Decimal       @db.Decimal(10, 2)
+  customizationPrice Decimal       @default(0) @db.Decimal(10, 2)
+  images             String[]
+  colors             Json
+  sizes              String[]
+  features           String[]
+  categoryId         String
+  category           Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  inStock            Boolean       @default(true)
+  customizable       Boolean       @default(true)
+  orderItems         OrderItem[]
+  designImages       DesignImage[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([categoryId])
+}
+
+model DesignImage {
+  id        String   @id @default(uuid())
+  url       String   // CDN URL from DigitalOcean Spaces
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  placement String   // 'front', 'back', 'leftShoulder', 'rightShoulder'
+  sessionId String   // Browser session ID for cleanup of orphaned images
+  metadata  Json?    // { width, height, originalFilename }
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([productId])
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique
+  status          OrderStatus @default(PENDING)
+  customerName    String
+  customerEmail   String
+  shippingAddress Json
+  items           OrderItem[]
+  subtotal        Decimal     @db.Decimal(10, 2)
+  shipping        Decimal     @db.Decimal(10, 2)
+  tax             Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id            String  @id @default(uuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product @relation(fields: [productId], references: [id])
+  quantity      Int
+  color         String
+  size          String
+  price         Decimal @db.Decimal(10, 2)
+  customization Json?
+  isCustomized  Boolean @default(false)
+  screenshots   Json?   // { front: url, back: url, left: url, right: url }
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  DELIVERED
+  CANCELLED
+}

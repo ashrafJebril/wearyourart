@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: wearyourart-db
+    environment:
+      POSTGRES_USER: wearyourart
+      POSTGRES_PASSWORD: wearyourart
+      POSTGRES_DB: wearyourart
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - wearyourart-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wearyourart -d wearyourart"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wearyourart-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://wearyourart:wearyourart_secret@postgres:5432/wearyourart
+      JWT_SECRET: wearyourart-jwt-secret-change-in-production
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - wearyourart-network
+    command: npm run start:dev
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: wearyourart-admin
+    environment:
+      VITE_API_URL: http://localhost:3001
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - wearyourart-network
+    command: npm run dev -- --host 0.0.0.0 --port 3002
+
+networks:
+  wearyourart-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
