@@ -25,7 +25,7 @@ export function ImageUploader() {
       formData.append('size', 'auto')
 
       try {
-        const response = await fetch('/api/remove-bg', {
+        const response = await fetch('/services/remove-bg', {
           method: 'POST',
           body: formData,
         })

@@ -374,7 +374,7 @@ export function PlacementCustomizer() {
       formData.append('image_file', blob, 'image.png')
       formData.append('size', 'auto')
 
-      const bgResponse = await fetch('/api/remove-bg', {
+      const bgResponse = await fetch('/services/remove-bg', {
         method: 'POST',
         body: formData,
       })
