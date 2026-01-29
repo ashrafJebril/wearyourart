@@ -64,7 +64,7 @@ export function CartDrawer() {
             <div className="border-t border-neutral-100 px-6 py-4 space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-neutral-600">Subtotal</span>
-                <span className="text-lg font-semibold">${total.toFixed(2)}</span>
+                <span className="text-lg font-semibold">{total.toFixed(2)} JD</span>
               </div>
               <p className="text-sm text-neutral-500">
                 Shipping and taxes calculated at checkout.

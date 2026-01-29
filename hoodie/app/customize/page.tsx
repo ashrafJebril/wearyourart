@@ -83,6 +83,9 @@ export default function CustomizePage() {
 
   // Load product data
   useEffect(() => {
+    // Reset customizer state when product changes (or on initial load)
+    resetCustomizer()
+
     async function loadProduct() {
       setLoading(true)
 
@@ -135,7 +138,7 @@ export default function CustomizePage() {
     }
 
     loadProduct()
-  }, [productId])
+  }, [productId, resetCustomizer])
 
   // Determine product type based on category
   const productType: ProductType = product ? getProductType(product.category) : 'hoodie'
@@ -268,7 +271,7 @@ export default function CustomizePage() {
                       {prod.name}
                     </h3>
                     <p className="text-sm text-neutral-500 mt-1">
-                      Starting at ${prod.basePrice.toFixed(2)}
+                      Starting at {prod.basePrice.toFixed(2)} JD
                     </p>
                     <div className="mt-3 flex items-center text-sm text-primary-600 font-medium">
                       <span>Customize Now</span>
@@ -376,13 +379,13 @@ export default function CustomizePage() {
           <div className="bg-neutral-50 rounded-xl p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-neutral-600">Base {productTypeName}</span>
-              <span className="font-medium">${basePrice.toFixed(2)}</span>
+              <span className="font-medium">{basePrice.toFixed(2)} JD</span>
             </div>
             {hasFrontCustomization && (
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">Front Design</span>
                 <span className="font-medium">
-                  +${frontCustomizationPrice.toFixed(2)}
+                  +{frontCustomizationPrice.toFixed(2)} JD
                 </span>
               </div>
             )}
@@ -390,7 +393,7 @@ export default function CustomizePage() {
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">Back Design</span>
                 <span className="font-medium">
-                  +${backCustomizationPrice.toFixed(2)}
+                  +{backCustomizationPrice.toFixed(2)} JD
                 </span>
               </div>
             )}
@@ -398,13 +401,13 @@ export default function CustomizePage() {
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">{productType === 'tshirt' ? 'Sleeve' : 'Shoulder'} Design</span>
                 <span className="font-medium">
-                  +${shoulderCustomizationPrice.toFixed(2)}
+                  +{shoulderCustomizationPrice.toFixed(2)} JD
                 </span>
               </div>
             )}
             <div className="flex justify-between text-base font-semibold border-t border-neutral-200 pt-2">
               <span>Total</span>
-              <span>${totalPrice.toFixed(2)}</span>
+              <span>{totalPrice.toFixed(2)} JD</span>
             </div>
           </div>
 

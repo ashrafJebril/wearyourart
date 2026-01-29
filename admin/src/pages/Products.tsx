@@ -198,11 +198,11 @@ export default function Products() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <p className="font-medium text-gray-900">
-                          ${Number(product.basePrice).toFixed(2)}
+                          {Number(product.basePrice).toFixed(2)} JD
                         </p>
                         {Number(product.customizationPrice) > 0 && (
                           <p className="text-xs text-gray-500">
-                            +${Number(product.customizationPrice).toFixed(2)}{' '}
+                            +{Number(product.customizationPrice).toFixed(2)} JD{' '}
                             custom
                           </p>
                         )}

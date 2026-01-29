@@ -38,7 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
           <div className="flex items-center justify-between mt-3">
             <p className="font-semibold text-neutral-900">
-              ${product.price.toFixed(2)}
+              {product.price.toFixed(2)} JD
             </p>
             <div className="flex -space-x-1">
               {product.colors.slice(0, 4).map((color) => (

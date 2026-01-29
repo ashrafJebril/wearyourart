@@ -477,16 +477,22 @@ function TShirtWithDecals({
           polygonOffsetFactor={-10}
         />
       )}
-      {/* Front text decal */}
+      {/* Front text decal - render on top of everything */}
       {textTexture && (
         <Decal
           position={textTransform.position}
           rotation={textTransform.rotation}
           scale={textTransform.scale}
-          map={textTexture}
-          polygonOffsetFactor={-50}
-          depthTest={false}
-        />
+        >
+          <meshBasicMaterial
+            map={textTexture}
+            transparent={true}
+            depthTest={false}
+            depthWrite={false}
+            polygonOffset={true}
+            polygonOffsetFactor={-100}
+          />
+        </Decal>
       )}
       {/* Back image decal */}
       {backImageTexture && (
@@ -498,16 +504,22 @@ function TShirtWithDecals({
           polygonOffsetFactor={-10}
         />
       )}
-      {/* Back text decal */}
+      {/* Back text decal - render on top */}
       {backTextTexture && (
         <Decal
           position={backTextTransform.position}
           rotation={backTextTransform.rotation}
           scale={backTextTransform.scale}
-          map={backTextTexture}
-          polygonOffsetFactor={-50}
-          depthTest={false}
-        />
+        >
+          <meshBasicMaterial
+            map={backTextTexture}
+            transparent={true}
+            depthTest={false}
+            depthWrite={false}
+            polygonOffset={true}
+            polygonOffsetFactor={-100}
+          />
+        </Decal>
       )}
       {/* Left sleeve image decal */}
       {leftSleeveImageTexture && (
@@ -519,16 +531,22 @@ function TShirtWithDecals({
           polygonOffsetFactor={-10}
         />
       )}
-      {/* Left sleeve text decal */}
+      {/* Left sleeve text decal - render on top */}
       {leftSleeveTextTexture && (
         <Decal
           position={leftSleeveTextTransform.position}
           rotation={leftSleeveTextTransform.rotation}
           scale={leftSleeveTextTransform.scale}
-          map={leftSleeveTextTexture}
-          polygonOffsetFactor={-50}
-          depthTest={false}
-        />
+        >
+          <meshBasicMaterial
+            map={leftSleeveTextTexture}
+            transparent={true}
+            depthTest={false}
+            depthWrite={false}
+            polygonOffset={true}
+            polygonOffsetFactor={-100}
+          />
+        </Decal>
       )}
       {/* Right sleeve image decal */}
       {rightSleeveImageTexture && (
@@ -540,16 +558,22 @@ function TShirtWithDecals({
           polygonOffsetFactor={-10}
         />
       )}
-      {/* Right sleeve text decal */}
+      {/* Right sleeve text decal - render on top */}
       {rightSleeveTextTexture && (
         <Decal
           position={rightSleeveTextTransform.position}
           rotation={rightSleeveTextTransform.rotation}
           scale={rightSleeveTextTransform.scale}
-          map={rightSleeveTextTexture}
-          polygonOffsetFactor={-50}
-          depthTest={false}
-        />
+        >
+          <meshBasicMaterial
+            map={rightSleeveTextTexture}
+            transparent={true}
+            depthTest={false}
+            depthWrite={false}
+            polygonOffset={true}
+            polygonOffsetFactor={-100}
+          />
+        </Decal>
       )}
     </mesh>
   );

@@ -84,10 +84,10 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
       {/* Price */}
       <div className="text-right flex-shrink-0">
         <p className="font-medium text-neutral-900">
-          ${(item.price * item.quantity).toFixed(2)}
+          {(item.price * item.quantity).toFixed(2)} JD
         </p>
         {item.quantity > 1 && (
-          <p className="text-sm text-neutral-500">${item.price.toFixed(2)} each</p>
+          <p className="text-sm text-neutral-500">{item.price.toFixed(2)} JD each</p>
         )}
       </div>
     </div>

@@ -215,7 +215,7 @@ export default function Orders() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="font-medium text-gray-900">
-                          ${Number(order.total).toFixed(2)}
+                          {Number(order.total).toFixed(2)} JD
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

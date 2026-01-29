@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { getProduct } from '@/lib/api/client'
 import { ProductDetail } from './ProductDetail'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 interface ProductDetailPageProps {
   params: Promise<{ productId: string }>

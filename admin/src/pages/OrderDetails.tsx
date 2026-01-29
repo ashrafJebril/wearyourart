@@ -282,19 +282,19 @@ export default function OrderDetails() {
             <div className="space-y-2">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${Number(order.subtotal).toFixed(2)}</span>
+                <span>{Number(order.subtotal).toFixed(2)} JD</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
-                <span>${Number(order.shipping).toFixed(2)}</span>
+                <span>{Number(order.shipping).toFixed(2)} JD</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Tax</span>
-                <span>${Number(order.tax).toFixed(2)}</span>
+                <span>{Number(order.tax).toFixed(2)} JD</span>
               </div>
               <div className="flex justify-between text-lg font-semibold text-gray-900 pt-2 border-t">
                 <span>Total</span>
-                <span>${Number(order.total).toFixed(2)}</span>
+                <span>{Number(order.total).toFixed(2)} JD</span>
               </div>
             </div>
           </div>
@@ -358,11 +358,11 @@ export default function OrderDetails() {
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-gray-900">
-                        ${Number(item.price).toFixed(2)}
+                        {Number(item.price).toFixed(2)} JD
                       </p>
                       {item.quantity > 1 && (
                         <p className="text-sm text-gray-500">
-                          ${(Number(item.price) / item.quantity).toFixed(2)} each
+                          {(Number(item.price) / item.quantity).toFixed(2)} JD each
                         </p>
                       )}
                     </div>

@@ -58,7 +58,7 @@ export default function Dashboard() {
   const statCards = [
     {
       label: 'Total Revenue',
-      value: `$${Number(stats?.totalRevenue || 0).toFixed(2)}`,
+      value: `${Number(stats?.totalRevenue || 0).toFixed(2)} JD`,
       icon: DollarSign,
       color: 'bg-green-500',
     },
@@ -235,7 +235,7 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="py-3 font-medium">
-                      ${Number(order.total).toFixed(2)}
+                      {Number(order.total).toFixed(2)} JD
                     </td>
                     <td className="py-3 text-gray-500 text-sm">
                       {new Date(order.createdAt).toLocaleDateString()}

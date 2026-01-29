@@ -12,7 +12,7 @@ function useDecalTransform(
   decalPosition: { x: number; y: number },
   decalScale: number,
   decalRotation: number,
-  zOffset: number = 0 // Additional Z offset for text to prevent clipping
+  zOffset: number = 0, // Additional Z offset for text to prevent clipping
 ) {
   return useMemo(() => {
     geometry.computeBoundingBox();
@@ -34,7 +34,7 @@ function useDecalTransform(
       rotation: [0, 0, (decalRotation * Math.PI) / 180] as [
         number,
         number,
-        number
+        number,
       ],
       scale: [decalSize, decalSize, decalSize] as [number, number, number],
     };
@@ -53,7 +53,7 @@ function useLeftShoulderDecalTransform(
   geometry: THREE.BufferGeometry,
   decalPosition: { x: number; y: number },
   decalScale: number,
-  decalRotation: number
+  decalRotation: number,
 ) {
   return useMemo(() => {
     geometry.computeBoundingBox();
@@ -79,7 +79,7 @@ function useLeftShoulderDecalTransform(
       rotation: [0, Math.PI / 2, (decalRotation * Math.PI) / 180] as [
         number,
         number,
-        number
+        number,
       ],
       scale: [decalSize, decalSize, decalSize] as [number, number, number],
     };
@@ -92,7 +92,7 @@ function useBackDecalTransform(
   decalPosition: { x: number; y: number },
   decalScale: number,
   decalRotation: number,
-  zOffset: number = 0
+  zOffset: number = 0,
 ) {
   return useMemo(() => {
     geometry.computeBoundingBox();
@@ -126,7 +126,7 @@ function useBackDecalTransform(
       rotation: [0, Math.PI, (decalRotation * Math.PI) / 180] as [
         number,
         number,
-        number
+        number,
       ],
       scale: [decalSize, decalSize, decalSize] as [number, number, number],
     };
@@ -145,7 +145,7 @@ function useRightShoulderDecalTransform(
   geometry: THREE.BufferGeometry,
   decalPosition: { x: number; y: number },
   decalScale: number,
-  decalRotation: number
+  decalRotation: number,
 ) {
   return useMemo(() => {
     geometry.computeBoundingBox();
@@ -172,7 +172,7 @@ function useRightShoulderDecalTransform(
       rotation: [0, -Math.PI / 2, (decalRotation * Math.PI) / 180] as [
         number,
         number,
-        number
+        number,
       ],
       scale: [decalSize, decalSize, decalSize] as [number, number, number],
     };
@@ -246,7 +246,7 @@ function HoodieWithDecals({
     decalPosition,
     decalScale,
     decalRotation,
-    0 // No extra Z offset for image
+    0, // No extra Z offset for image
   );
 
   // Calculate text decal transform - push it further forward to prevent clipping
@@ -255,7 +255,7 @@ function HoodieWithDecals({
     textPosition,
     textScale,
     textRotation,
-    50 // Extra Z offset to keep text in front of curved surfaces
+    11, // Extra Z offset to keep text in front of curved surfaces
   );
 
   // Calculate back decal transforms
@@ -264,7 +264,7 @@ function HoodieWithDecals({
     backPosition,
     backScale,
     backRotation,
-    0
+    0,
   );
 
   const backTextTransform = useBackDecalTransform(
@@ -272,7 +272,7 @@ function HoodieWithDecals({
     backTextPosition,
     backTextScale * 1.1,
     backTextRotation,
-    50
+    50,
   );
 
   // Calculate left shoulder transforms
@@ -280,14 +280,14 @@ function HoodieWithDecals({
     geometry,
     leftShoulderPosition,
     leftShoulderScale,
-    leftShoulderRotation
+    leftShoulderRotation,
   );
 
   const leftShoulderTextTransform = useLeftShoulderDecalTransform(
     geometry,
     leftShoulderPosition,
     leftShoulderScale * 1.1, // Slightly larger for text visibility
-    leftShoulderRotation
+    leftShoulderRotation,
   );
 
   // Calculate right shoulder transforms
@@ -295,14 +295,14 @@ function HoodieWithDecals({
     geometry,
     rightShoulderPosition,
     rightShoulderScale,
-    rightShoulderRotation
+    rightShoulderRotation,
   );
 
   const rightShoulderTextTransform = useRightShoulderDecalTransform(
     geometry,
     rightShoulderPosition,
     rightShoulderScale * 1.1, // Slightly larger for text visibility
-    rightShoulderRotation
+    rightShoulderRotation,
   );
 
   return (
@@ -324,8 +324,7 @@ function HoodieWithDecals({
           rotation={textTransform.rotation}
           scale={textTransform.scale}
           map={textTexture}
-          polygonOffsetFactor={-50}
-          depthTest={false}
+          polygonOffsetFactor={-10}
         />
       )}
       {/* Back image decal */}
@@ -345,8 +344,7 @@ function HoodieWithDecals({
           rotation={backTextTransform.rotation}
           scale={backTextTransform.scale}
           map={backTextTexture}
-          polygonOffsetFactor={-60}
-          depthTest={false}
+          polygonOffsetFactor={-10}
         />
       )}
       {/* Left shoulder image decal */}
@@ -367,8 +365,7 @@ function HoodieWithDecals({
           rotation={leftShoulderTextTransform.rotation}
           scale={leftShoulderTextTransform.scale}
           map={leftShoulderTextTexture}
-          polygonOffsetFactor={-60}
-          depthTest={false}
+          polygonOffsetFactor={-10}
         />
       )}
       {/* Right shoulder image decal */}
@@ -389,8 +386,7 @@ function HoodieWithDecals({
           rotation={rightShoulderTextTransform.rotation}
           scale={rightShoulderTextTransform.scale}
           map={rightShoulderTextTexture}
-          polygonOffsetFactor={-60}
-          depthTest={false}
+          polygonOffsetFactor={-10}
         />
       )}
     </mesh>
@@ -404,7 +400,7 @@ export function HoodieModel() {
   const [backImageTexture, setBackImageTexture] =
     useState<THREE.Texture | null>(null);
   const [backTextTexture, setBackTextTexture] = useState<THREE.Texture | null>(
-    null
+    null,
   );
   const [leftShoulderImageTexture, setLeftShoulderImageTexture] =
     useState<THREE.Texture | null>(null);
@@ -537,7 +533,7 @@ export function HoodieModel() {
       undefined,
       (err) => {
         console.error("Texture load error:", err);
-      }
+      },
     );
   }, [decalImage]);
 
@@ -576,12 +572,15 @@ export function HoodieModel() {
     };
 
     // Wait for font to load before rendering
-    document.fonts.load(`bold 64px "${textFont}"`).then(() => {
-      renderText();
-    }).catch(() => {
-      // Fallback: render anyway if font loading fails
-      renderText();
-    });
+    document.fonts
+      .load(`bold 64px "${textFont}"`)
+      .then(() => {
+        renderText();
+      })
+      .catch(() => {
+        // Fallback: render anyway if font loading fails
+        renderText();
+      });
 
     return () => {
       // Cleanup handled by state update
@@ -592,7 +591,7 @@ export function HoodieModel() {
   useEffect(() => {
     console.log(
       "Back image state changed:",
-      backImage ? backImage.substring(0, 50) + "..." : "null"
+      backImage ? backImage.substring(0, 50) + "..." : "null",
     );
     if (!backImage) {
       setBackImageTexture(null);
@@ -606,7 +605,7 @@ export function HoodieModel() {
         console.log(
           "Back image texture loaded successfully!",
           texture.image?.width,
-          texture.image?.height
+          texture.image?.height,
         );
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.minFilter = THREE.LinearMipmapLinearFilter;
@@ -618,13 +617,17 @@ export function HoodieModel() {
       undefined,
       (err) => {
         console.error("Back texture load error:", err);
-      }
+      },
     );
   }, [backImage]);
 
   // Generate back text texture
   useEffect(() => {
-    console.log("Back text effect triggered:", { backText, backTextFont, backTextColor });
+    console.log("Back text effect triggered:", {
+      backText,
+      backTextFont,
+      backTextColor,
+    });
 
     if (!backText) {
       setBackTextTexture(null);
@@ -656,12 +659,15 @@ export function HoodieModel() {
     };
 
     // Wait for font to load before rendering
-    document.fonts.load(`bold 64px "${backTextFont}"`).then(() => {
-      renderText();
-    }).catch(() => {
-      // Fallback: render anyway if font loading fails
-      renderText();
-    });
+    document.fonts
+      .load(`bold 64px "${backTextFont}"`)
+      .then(() => {
+        renderText();
+      })
+      .catch(() => {
+        // Fallback: render anyway if font loading fails
+        renderText();
+      });
 
     return () => {
       // Cleanup handled by state update
@@ -677,7 +683,7 @@ export function HoodieModel() {
 
     console.log(
       "Loading left shoulder image...",
-      leftShoulderImage.substring(0, 50)
+      leftShoulderImage.substring(0, 50),
     );
     const loader = new THREE.TextureLoader();
     loader.load(
@@ -686,7 +692,7 @@ export function HoodieModel() {
         console.log(
           "Left shoulder texture loaded successfully!",
           texture.image?.width,
-          texture.image?.height
+          texture.image?.height,
         );
         // High quality texture settings
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -703,7 +709,7 @@ export function HoodieModel() {
       undefined,
       (err) => {
         console.error("Left shoulder texture load error:", err);
-      }
+      },
     );
   }, [leftShoulderImage]);
 
@@ -746,7 +752,7 @@ export function HoodieModel() {
 
     console.log(
       "Loading right shoulder image...",
-      rightShoulderImage.substring(0, 50)
+      rightShoulderImage.substring(0, 50),
     );
     const loader = new THREE.TextureLoader();
     loader.load(
@@ -755,7 +761,7 @@ export function HoodieModel() {
         console.log(
           "Right shoulder texture loaded successfully!",
           texture.image?.width,
-          texture.image?.height
+          texture.image?.height,
         );
         // High quality texture settings
         texture.colorSpace = THREE.SRGBColorSpace;
@@ -772,7 +778,7 @@ export function HoodieModel() {
       undefined,
       (err) => {
         console.error("Right shoulder texture load error:", err);
-      }
+      },
     );
   }, [rightShoulderImage]);
 
@@ -824,7 +830,12 @@ export function HoodieModel() {
   const isInitialized = useRef(false);
   const frameCount = useRef(0);
 
-  console.log('HoodieModel render - targetRotation from store:', targetRotation, 'Math.PI =', Math.PI);
+  console.log(
+    "HoodieModel render - targetRotation from store:",
+    targetRotation,
+    "Math.PI =",
+    Math.PI,
+  );
 
   // Smooth rotation with gentle swaying animation
   useFrame((state) => {
@@ -843,7 +854,7 @@ export function HoodieModel() {
 
       // Initialize rotation on first frame
       if (!isInitialized.current) {
-        console.log('Initializing rotation to:', targetRotation);
+        console.log("Initializing rotation to:", targetRotation);
         groupRef.current.rotation.y = targetRotation;
         isInitialized.current = true;
       }

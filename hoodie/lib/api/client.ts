@@ -39,19 +39,19 @@ export interface ApiCategory {
 
 export async function getCategories(): Promise<ApiCategory[]> {
   return fetchApi<ApiCategory[]>('/categories', {
-    next: { revalidate: 60, tags: ['categories'] },
+    cache: 'no-store',
   });
 }
 
 export async function getCategoryBySlug(slug: string): Promise<ApiCategory> {
   return fetchApi<ApiCategory>(`/categories/slug/${slug}`, {
-    next: { revalidate: 60, tags: ['categories'] },
+    cache: 'no-store',
   });
 }
 
 export async function getCategoryById(id: string): Promise<ApiCategory> {
   return fetchApi<ApiCategory>(`/categories/${id}`, {
-    next: { revalidate: 60, tags: ['categories'] },
+    cache: 'no-store',
   });
 }
 

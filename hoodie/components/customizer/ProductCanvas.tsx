@@ -1,10 +1,12 @@
 'use client'
 
-import { Suspense, forwardRef, useRef, useImperativeHandle } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Suspense, forwardRef, useRef, useImperativeHandle, useEffect } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Environment, OrbitControls } from '@react-three/drei'
 import { HoodieModel } from './HoodieModel'
 import { TShirtModel } from './TShirtModel'
+import { useCustomizerStore } from '@/lib/store/useCustomizerStore'
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 
 export type ProductType = 'hoodie' | 'tshirt'
 
@@ -23,6 +25,37 @@ function Loader() {
       <boxGeometry args={[0.5, 0.5, 0.5]} />
       <meshStandardMaterial color="#a855f7" wireframe />
     </mesh>
+  )
+}
+
+// Custom OrbitControls that resets camera when placement changes
+function CameraControls() {
+  const controlsRef = useRef<OrbitControlsImpl>(null)
+  const { camera } = useThree()
+  const targetRotation = useCustomizerStore((state) => state.targetRotation)
+  const lastTargetRotation = useRef(targetRotation)
+
+  useEffect(() => {
+    // Reset camera position when placement tab changes
+    if (lastTargetRotation.current !== targetRotation && controlsRef.current) {
+      // Reset camera to default front position
+      camera.position.set(0, 0, 5)
+      controlsRef.current.target.set(0, 0, 0)
+      controlsRef.current.update()
+      lastTargetRotation.current = targetRotation
+    }
+  }, [targetRotation, camera])
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      enablePan={false}
+      enableZoom={true}
+      minDistance={2}
+      maxDistance={10}
+      autoRotate={false}
+      target={[0, 0, 0]}
+    />
   )
 }
 
@@ -64,15 +97,8 @@ export const ProductCanvas = forwardRef<ProductCanvasRef, ProductCanvasProps>(
             {/* Conditionally render model based on product type */}
             {productType === 'tshirt' ? <TShirtModel /> : <HoodieModel />}
 
-            {/* Controls */}
-            <OrbitControls
-              enablePan={false}
-              enableZoom={true}
-              minDistance={2}
-              maxDistance={10}
-              autoRotate={false}
-              target={[0, 0, 0]}
-            />
+            {/* Controls - resets when placement changes */}
+            <CameraControls />
 
             {/* Environment for reflections */}
             <Environment preset="city" />

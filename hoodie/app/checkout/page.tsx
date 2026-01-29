@@ -246,7 +246,7 @@ export default function CheckoutPage() {
         </p>
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8">
           <p className="text-amber-800 font-medium">Cash on Delivery</p>
-          <p className="text-amber-700 text-sm">Please have ${total.toFixed(2)} ready when your order arrives.</p>
+          <p className="text-amber-700 text-sm">Please have {total.toFixed(2)} JD ready when your order arrives.</p>
         </div>
         <Link href="/products" className="btn-primary">
           Continue Shopping
@@ -422,20 +422,20 @@ export default function CheckoutPage() {
               <div className="border-t border-neutral-200 pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-600">Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{subtotal.toFixed(2)} JD</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-600">Shipping</span>
-                  <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                  <span>{shipping === 0 ? 'Free' : `${shipping.toFixed(2)} JD`}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-600">Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{tax.toFixed(2)} JD</span>
                 </div>
               </div>
               <div className="flex justify-between text-lg font-semibold border-t border-neutral-200 pt-4">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{total.toFixed(2)} JD</span>
               </div>
             </div>
           </div>
