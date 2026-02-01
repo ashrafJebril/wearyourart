@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { CartItem } from '@/components/cart'
 import { useCartStore } from '@/lib/store/useCartStore'
 
 export default function CartPage() {
+  const t = useTranslations('cart')
   const { items, clearCart, getTotalPrice } = useCartStore()
   const subtotal = getTotalPrice()
   const shipping = subtotal > 100 ? 0 : 9.99
@@ -28,13 +30,13 @@ export default function CartPage() {
           />
         </svg>
         <h1 className="text-2xl font-bold text-neutral-900 mb-4">
-          Your Cart is Empty
+          {t('cartIsEmpty')}
         </h1>
         <p className="text-neutral-500 mb-8">
-          Looks like you haven&apos;t added any products yet.
+          {t('noProductsYet')}
         </p>
         <Link href="/products" className="btn-primary">
-          Start Shopping
+          {t('startShopping')}
         </Link>
       </div>
     )
@@ -43,12 +45,12 @@ export default function CartPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900">Shopping Cart</h1>
+        <h1 className="text-3xl font-bold text-neutral-900">{t('title')}</h1>
         <button
           onClick={clearCart}
           className="text-sm text-neutral-500 hover:text-red-600 transition-colors"
         >
-          Clear Cart
+          {t('clearCart')}
         </button>
       </div>
 
@@ -68,46 +70,46 @@ export default function CartPage() {
         <div className="lg:col-span-1">
           <div className="bg-neutral-50 rounded-2xl p-6 sticky top-24">
             <h2 className="text-lg font-semibold text-neutral-900 mb-6">
-              Order Summary
+              {t('orderSummary')}
             </h2>
 
             <div className="space-y-4 mb-6">
               <div className="flex justify-between">
-                <span className="text-neutral-600">Subtotal</span>
+                <span className="text-neutral-600">{t('subtotal')}</span>
                 <span className="font-medium">{subtotal.toFixed(2)} JD</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-600">Shipping</span>
+                <span className="text-neutral-600">{t('shipping')}</span>
                 <span className="font-medium">
                   {shipping === 0 ? (
-                    <span className="text-green-600">Free</span>
+                    <span className="text-green-600">{t('free')}</span>
                   ) : (
                     `${shipping.toFixed(2)} JD`
                   )}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-600">Estimated Tax</span>
+                <span className="text-neutral-600">{t('estimatedTax')}</span>
                 <span className="font-medium">{tax.toFixed(2)} JD</span>
               </div>
               <div className="flex justify-between text-lg font-semibold border-t border-neutral-200 pt-4">
-                <span>Total</span>
+                <span>{t('total')}</span>
                 <span>{total.toFixed(2)} JD</span>
               </div>
             </div>
 
             {shipping > 0 && (
               <p className="text-sm text-neutral-500 mb-6">
-                Add ${(100 - subtotal).toFixed(2)} more for free shipping!
+                {t('freeShippingMessage', { amount: (100 - subtotal).toFixed(2) })}
               </p>
             )}
 
             <Link href="/checkout" className="btn-primary w-full text-center">
-              Proceed to Checkout
+              {t('proceedToCheckout')}
             </Link>
 
             <Link href="/products" className="btn-ghost w-full text-center mt-3">
-              Continue Shopping
+              {t('continueShopping')}
             </Link>
           </div>
         </div>

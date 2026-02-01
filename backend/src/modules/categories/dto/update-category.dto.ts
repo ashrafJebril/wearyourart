@@ -8,7 +8,15 @@ export class UpdateCategoryDto {
 
   @IsString()
   @IsOptional()
+  nameAr?: string;
+
+  @IsString()
+  @IsOptional()
   description?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionAr?: string;
 
   @IsString()
   @IsOptional()

@@ -1,0 +1,1 @@
+export { useLocalizedContent } from './useLocalizedContent'

@@ -1,15 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Cairo } from 'next/font/google'
 import './globals.css'
-import { HeaderWrapper } from '@/components/layout/HeaderWrapper'
-import { Footer } from '@/components/layout/Footer'
-import { CartDrawer } from '@/components/cart/CartDrawer'
-import { StoreProvider } from '@/components/providers/StoreProvider'
 
-const inter = Inter({ subsets: ['latin'] })
-
-// Force dynamic rendering - API data needed at runtime
-export const dynamic = 'force-dynamic'
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const cairo = Cairo({ subsets: ['arabic', 'latin'], variable: '--font-cairo' })
 
 export const metadata: Metadata = {
   title: 'HOODIE - Custom 3D Apparel Design',
@@ -22,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -37,15 +31,8 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={inter.className}>
-        <StoreProvider>
-          <div className="min-h-screen flex flex-col">
-            <HeaderWrapper />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <CartDrawer />
-          </div>
-        </StoreProvider>
+      <body className={`${inter.variable} ${cairo.variable}`}>
+        {children}
       </body>
     </html>
   )

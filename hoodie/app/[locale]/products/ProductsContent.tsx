@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { ProductGrid } from '@/components/product'
 import { Product, Category } from '@/lib/types'
+import { useLocalizedContent } from '@/lib/hooks'
+import { useTranslations } from 'next-intl'
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'name'
 
@@ -12,6 +14,7 @@ interface ProductsContentProps {
   categories: Category[]
   currentCategory: Category | null
   selectedCategorySlug?: string
+  selectedSubcategorySlug?: string
   totalProductCount: number
 }
 
@@ -20,9 +23,12 @@ export function ProductsContent({
   categories,
   currentCategory,
   selectedCategorySlug,
+  selectedSubcategorySlug,
   totalProductCount,
 }: ProductsContentProps) {
   const [sortBy, setSortBy] = useState<SortOption>('featured')
+  const { getName, getDescription } = useLocalizedContent()
+  const t = useTranslations('products')
 
   const sortedProducts = useMemo(() => {
     const result = [...initialProducts]
@@ -41,17 +47,28 @@ export function ProductsContent({
     })
   }, [initialProducts, sortBy])
 
+  // Find current subcategory if selected
+  const currentSubcategory = currentCategory?.subcategories?.find(
+    sub => sub.slug === selectedSubcategorySlug
+  )
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-neutral-900">
-          {currentCategory ? currentCategory.name : 'All Products'}
+          {currentSubcategory
+            ? getName(currentSubcategory)
+            : currentCategory
+              ? getName(currentCategory)
+              : t('allProducts')}
         </h1>
         <p className="text-neutral-600 mt-2">
-          {currentCategory
-            ? currentCategory.description
-            : 'Browse our complete collection'}
+          {currentSubcategory
+            ? getDescription(currentSubcategory) || `Browse ${getName(currentSubcategory)}`
+            : currentCategory
+              ? getDescription(currentCategory)
+              : t('noProductsFound')}
         </p>
       </div>
 
@@ -60,7 +77,7 @@ export function ProductsContent({
         <aside className="lg:w-64 flex-shrink-0">
           <div className="sticky top-24">
             <h2 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-4">
-              Categories
+              {t('categories')}
             </h2>
             <nav className="space-y-1">
               <Link
@@ -71,28 +88,54 @@ export function ProductsContent({
                     : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                 }`}
               >
-                <span>All Products</span>
+                <span>{t('allProducts')}</span>
                 <span className={`text-xs ${!selectedCategorySlug ? 'text-neutral-400' : 'text-neutral-400'}`}>
                   {totalProductCount}
                 </span>
               </Link>
               {categories.map((category) => {
-                const isSelected = selectedCategorySlug === category.slug
+                const isCategorySelected = selectedCategorySlug === category.slug
+                const hasSubcategories = category.subcategories && category.subcategories.length > 0
                 return (
-                  <Link
-                    key={category.slug}
-                    href={`/products?category=${category.slug}`}
-                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
-                      isSelected
-                        ? 'bg-neutral-900 text-white'
-                        : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
-                    }`}
-                  >
-                    <span>{category.name}</span>
-                    <span className={`text-xs ${isSelected ? 'text-neutral-400' : 'text-neutral-400'}`}>
-                      {category.productCount ?? 0}
-                    </span>
-                  </Link>
+                  <div key={category.slug}>
+                    <Link
+                      href={`/products?category=${category.slug}`}
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
+                        isCategorySelected && !selectedSubcategorySlug
+                          ? 'bg-neutral-900 text-white'
+                          : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                      }`}
+                    >
+                      <span>{getName(category)}</span>
+                      <span className={`text-xs ${isCategorySelected && !selectedSubcategorySlug ? 'text-neutral-400' : 'text-neutral-400'}`}>
+                        {category.productCount ?? 0}
+                      </span>
+                    </Link>
+                    {/* Show subcategories when this category is selected */}
+                    {isCategorySelected && hasSubcategories && (
+                      <div className="ms-4 mt-1 space-y-1">
+                        {category.subcategories!.map((sub) => {
+                          const isSubSelected = selectedSubcategorySlug === sub.slug
+                          return (
+                            <Link
+                              key={sub.slug}
+                              href={`/products?category=${category.slug}&subcategory=${sub.slug}`}
+                              className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                                isSubSelected
+                                  ? 'bg-neutral-700 text-white'
+                                  : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900'
+                              }`}
+                            >
+                              <span>{getName(sub)}</span>
+                              <span className={`text-xs ${isSubSelected ? 'text-neutral-400' : 'text-neutral-400'}`}>
+                                {sub.productCount ?? 0}
+                              </span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
                 )
               })}
             </nav>
@@ -108,7 +151,7 @@ export function ProductsContent({
             </p>
             <div className="flex items-center gap-2">
               <label htmlFor="sort" className="text-sm text-neutral-600">
-                Sort by:
+                {t('sortBy')}:
               </label>
               <select
                 id="sort"
@@ -116,9 +159,9 @@ export function ProductsContent({
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
                 className="text-sm border border-neutral-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-neutral-900 focus:border-transparent outline-none"
               >
-                <option value="featured">Featured</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
+                <option value="featured">{t('newest')}</option>
+                <option value="price-asc">{t('priceLowToHigh')}</option>
+                <option value="price-desc">{t('priceHighToLow')}</option>
                 <option value="name">Name</option>
               </select>
             </div>
@@ -134,15 +177,15 @@ export function ProductsContent({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-neutral-900 mb-2">No products found</h3>
+              <h3 className="text-lg font-medium text-neutral-900 mb-2">{t('noProductsFound')}</h3>
               <p className="text-neutral-500 mb-6">
-                We don&apos;t have any products in this category yet.
+                {t('noProductsInCategory')}
               </p>
               <Link
                 href="/products"
                 className="inline-flex items-center px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-colors"
               >
-                View all products
+                {t('allProducts')}
               </Link>
             </div>
           )}

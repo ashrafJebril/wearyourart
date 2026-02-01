@@ -25,9 +25,11 @@ function useDecalTransform(
     // Shift decal left to center it on the chest (model is asymmetric)
     const posX = center.x + decalPosition.x - 16;
     const posY = center.y + decalPosition.y + 70;
-    const posZ = box.max.z - 100 + zOffset; // Apply additional Z offset
+    const posZ = box.max.z - 88;
 
     const decalSize = decalScale * Math.min(size.x, size.y) * 0.3;
+    // Increase Z scale to cover curved surface - renderOrder on rope meshes prevents bleed-through
+    const decalDepth = decalSize * 1.5;
 
     return {
       position: [posX, posY, posZ] as [number, number, number],
@@ -36,7 +38,7 @@ function useDecalTransform(
         number,
         number,
       ],
-      scale: [decalSize, decalSize, decalSize] as [number, number, number],
+      scale: [decalSize, decalSize, decalDepth] as [number, number, number],
     };
   }, [
     geometry,
@@ -71,6 +73,8 @@ function useLeftShoulderDecalTransform(
     const posZ = box.max.z - 280;
 
     const decalSize = decalScale * Math.min(size.x, size.y) * 0.2;
+    // Increase Z scale slightly to cover curved surface
+    const decalDepth = decalSize * 1.0;
 
     console.log("Left shoulder decal:", { posX, posY, posZ, decalSize });
 
@@ -81,7 +85,7 @@ function useLeftShoulderDecalTransform(
         number,
         number,
       ],
-      scale: [decalSize, decalSize, decalSize] as [number, number, number],
+      scale: [decalSize, decalSize, decalDepth] as [number, number, number],
     };
   }, [geometry, decalPosition.x, decalPosition.y, decalScale, decalRotation]);
 }
@@ -110,6 +114,8 @@ function useBackDecalTransform(
     const posZ = -(box.max.z - 50) - zOffset;
 
     const decalSize = decalScale * Math.min(size.x, size.y) * 0.3;
+    // Increase Z scale to cover curved surface - renderOrder on other meshes prevents bleed-through
+    const decalDepth = decalSize * 1.5;
 
     console.log("Back decal transform:", {
       posX,
@@ -128,7 +134,7 @@ function useBackDecalTransform(
         number,
         number,
       ],
-      scale: [decalSize, decalSize, decalSize] as [number, number, number],
+      scale: [decalSize, decalSize, decalDepth] as [number, number, number],
     };
   }, [
     geometry,
@@ -164,6 +170,8 @@ function useRightShoulderDecalTransform(
     const posZ = box.max.z - 220; // Same Z as left shoulder
 
     const decalSize = decalScale * Math.min(size.x, size.y) * 0.2;
+    // Increase Z scale slightly to cover curved surface
+    const decalDepth = decalSize * 1.0;
 
     console.log("Right shoulder decal:", { posX, posY, posZ, decalSize });
 
@@ -174,7 +182,7 @@ function useRightShoulderDecalTransform(
         number,
         number,
       ],
-      scale: [decalSize, decalSize, decalSize] as [number, number, number],
+      scale: [decalSize, decalSize, decalDepth] as [number, number, number],
     };
   }, [geometry, decalPosition.x, decalPosition.y, decalScale, decalRotation]);
 }
@@ -898,14 +906,7 @@ export function HoodieModel() {
 
   return (
     <group ref={groupRef} scale={0.005} rotation={[0, 0, 0]}>
-      {/* Render all meshes except body */}
-      {meshes
-        .filter((m) => m !== bodyMesh)
-        .map((m, i) => (
-          <mesh key={i} geometry={m.geometry} material={m.material} />
-        ))}
-
-      {/* Render body mesh with decals */}
+      {/* Render body mesh with decals first */}
       {bodyMesh && (
         <HoodieWithDecals
           geometry={bodyMesh.geometry}
@@ -938,6 +939,13 @@ export function HoodieModel() {
           rightShoulderRotation={rightShoulderRotation}
         />
       )}
+
+      {/* Render all other meshes (rope, etc.) AFTER body with higher renderOrder so they appear on top of decals */}
+      {meshes
+        .filter((m) => m !== bodyMesh)
+        .map((m, i) => (
+          <mesh key={i} geometry={m.geometry} material={m.material} renderOrder={10} />
+        ))}
     </group>
   );
 }

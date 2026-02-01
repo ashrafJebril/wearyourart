@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ProductCanvas, PlacementCustomizer, ColorPicker } from '@/components/customizer'
 import type { ProductType } from '@/components/customizer'
 import { SizeSelector } from '@/components/product'
@@ -11,6 +12,7 @@ import { useCartStore } from '@/lib/store/useCartStore'
 import { sizes, getProductById as getLocalProductById, products } from '@/lib/data/products'
 import { getProductById as getApiProductById, transformProduct, getAllProducts } from '@/lib/api/client'
 import type { Product } from '@/lib/types'
+import { useLocalizedContent } from '@/lib/hooks/useLocalizedContent'
 
 // Determine product type from category
 function getProductType(category: string): ProductType {
@@ -22,15 +24,12 @@ function getProductType(category: string): ProductType {
   return 'hoodie'
 }
 
-// Get product display name based on type
-function getProductTypeName(productType: ProductType): string {
-  return productType === 'tshirt' ? 'T-Shirt' : 'Hoodie'
-}
-
 export default function CustomizePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const productId = searchParams.get('product')
+  const t = useTranslations('customize')
+  const { getName, locale } = useLocalizedContent()
 
   const [isAdding, setIsAdding] = useState(false)
   const [product, setProduct] = useState<Product | null>(null)
@@ -142,7 +141,6 @@ export default function CustomizePage() {
 
   // Determine product type based on category
   const productType: ProductType = product ? getProductType(product.category) : 'hoodie'
-  const productTypeName = getProductTypeName(productType)
 
   // Calculate prices based on customizations
   const basePrice = product?.basePrice || 79.99
@@ -168,6 +166,7 @@ export default function CustomizePage() {
     addItem({
       productId: product.id,
       name: product.name,
+      nameAr: product.nameAr,
       color: selectedColor,
       size: selectedSize,
       quantity: 1,
@@ -222,7 +221,7 @@ export default function CustomizePage() {
       <div className="h-[calc(100vh-80px)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-neutral-600">Loading customizer...</p>
+          <p className="mt-4 text-neutral-600">{t('loadingCustomizer')}</p>
         </div>
       </div>
     )
@@ -235,10 +234,10 @@ export default function CustomizePage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-10">
             <h1 className="text-3xl md:text-4xl font-bold text-neutral-900">
-              Choose a Product to Customize
+              {t('chooseProductToCustomize')}
             </h1>
             <p className="text-neutral-600 mt-3 text-lg">
-              Select the item you want to personalize with your own design
+              {t('selectItemToPersonalize')}
             </p>
           </div>
 
@@ -254,7 +253,7 @@ export default function CustomizePage() {
                     {prod.images[0] ? (
                       <img
                         src={prod.images[0]}
-                        alt={prod.name}
+                        alt={getName(prod)}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
@@ -268,14 +267,14 @@ export default function CustomizePage() {
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-neutral-900 group-hover:text-primary-600 transition-colors">
-                      {prod.name}
+                      {getName(prod)}
                     </h3>
                     <p className="text-sm text-neutral-500 mt-1">
-                      Starting at {prod.basePrice.toFixed(2)} JD
+                      {t('startingAt')} {prod.basePrice.toFixed(2)} JD
                     </p>
-                    <div className="mt-3 flex items-center text-sm text-primary-600 font-medium">
-                      <span>Customize Now</span>
-                      <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className={`mt-3 flex items-center text-sm text-primary-600 font-medium ${locale === 'ar' ? 'flex-row-reverse' : ''}`}>
+                      <span>{t('customizeNow')}</span>
+                      <svg className={`w-4 h-4 group-hover:translate-x-1 transition-transform ${locale === 'ar' ? 'mr-1 rotate-180' : 'ml-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -288,10 +287,10 @@ export default function CustomizePage() {
               <svg className="w-16 h-16 mx-auto text-neutral-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-neutral-900">No Customizable Products</h3>
-              <p className="text-neutral-500 mt-2">Check back later for products you can personalize.</p>
+              <h3 className="text-lg font-medium text-neutral-900">{t('noCustomizableProducts')}</h3>
+              <p className="text-neutral-500 mt-2">{t('checkBackLater')}</p>
               <Link href="/products" className="btn-primary mt-6 inline-block">
-                Browse All Products
+                {t('browseAllProducts')}
               </Link>
             </div>
           )}
@@ -305,13 +304,13 @@ export default function CustomizePage() {
     return (
       <div className="h-[calc(100vh-80px)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900">Product Not Found</h1>
-          <p className="text-neutral-600 mt-2">The product you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-neutral-900">{t('productNotFound')}</h1>
+          <p className="text-neutral-600 mt-2">{t('productNotFoundDesc')}</p>
           <button
             onClick={() => router.push('/products')}
             className="btn-primary mt-4"
           >
-            Browse Products
+            {t('browseProducts')}
           </button>
         </div>
       </div>
@@ -324,15 +323,15 @@ export default function CustomizePage() {
     return (
       <div className="h-[calc(100vh-80px)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900">Customization Coming Soon</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">{t('customizationComingSoon')}</h1>
           <p className="text-neutral-600 mt-2">
-            3D customization for {product.category} is not yet available.
+            {t('customizationNotAvailable')}
           </p>
           <button
             onClick={() => router.push('/products')}
             className="btn-primary mt-4"
           >
-            Browse Products
+            {t('browseProducts')}
           </button>
         </div>
       </div>
@@ -352,10 +351,10 @@ export default function CustomizePage() {
           {/* Header */}
           <div>
             <h1 className="text-2xl font-bold text-neutral-900">
-              Design Your {productTypeName}
+              {productType === 'tshirt' ? t('designYourTshirt') : t('designYourHoodie')}
             </h1>
             <p className="text-neutral-500 mt-1">
-              {product.name} - Choose a placement and add your design
+              {getName(product)} - {t('choosePlacementAndAdd')}
             </p>
           </div>
 
@@ -364,7 +363,7 @@ export default function CustomizePage() {
 
           {/* Color Selection */}
           <div>
-            <ColorPicker />
+            <ColorPicker productType={productType} />
           </div>
 
           {/* Size Selection */}
@@ -378,12 +377,12 @@ export default function CustomizePage() {
           {/* Price Summary */}
           <div className="bg-neutral-50 rounded-xl p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-neutral-600">Base {productTypeName}</span>
+              <span className="text-neutral-600">{productType === 'tshirt' ? t('baseTshirt') : t('baseHoodie')}</span>
               <span className="font-medium">{basePrice.toFixed(2)} JD</span>
             </div>
             {hasFrontCustomization && (
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-600">Front Design</span>
+                <span className="text-neutral-600">{t('frontDesign')}</span>
                 <span className="font-medium">
                   +{frontCustomizationPrice.toFixed(2)} JD
                 </span>
@@ -391,7 +390,7 @@ export default function CustomizePage() {
             )}
             {hasBackCustomization && (
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-600">Back Design</span>
+                <span className="text-neutral-600">{t('backDesign')}</span>
                 <span className="font-medium">
                   +{backCustomizationPrice.toFixed(2)} JD
                 </span>
@@ -399,14 +398,14 @@ export default function CustomizePage() {
             )}
             {hasShoulderCustomization && (
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-600">{productType === 'tshirt' ? 'Sleeve' : 'Shoulder'} Design</span>
+                <span className="text-neutral-600">{productType === 'tshirt' ? t('sleeveDesign') : t('shoulderDesign')}</span>
                 <span className="font-medium">
                   +{shoulderCustomizationPrice.toFixed(2)} JD
                 </span>
               </div>
             )}
             <div className="flex justify-between text-base font-semibold border-t border-neutral-200 pt-2">
-              <span>Total</span>
+              <span>{t('total')}</span>
               <span>{totalPrice.toFixed(2)} JD</span>
             </div>
           </div>
@@ -417,7 +416,7 @@ export default function CustomizePage() {
             disabled={isAdding}
             className="btn-primary w-full disabled:opacity-50"
           >
-            {isAdding ? 'Adding...' : 'Add to Cart'}
+            {isAdding ? t('adding') : t('addToCart')}
           </button>
 
           {/* Back to Products */}
@@ -425,7 +424,7 @@ export default function CustomizePage() {
             onClick={() => router.push('/products')}
             className="btn-ghost w-full"
           >
-            Browse Other Styles
+            {t('browseOtherStyles')}
           </button>
         </div>
       </div>

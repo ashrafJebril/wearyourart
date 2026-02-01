@@ -3,16 +3,21 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { productsApi, CreateProductData } from '../api/products';
 import { categoriesApi } from '../api/categories';
-import { Category, ProductColor } from '../types';
+import { subcategoriesApi } from '../api/subcategories';
+import { Category, Subcategory, ProductColor, ColorImages } from '../types';
 import { ArrowLeft, X, Plus } from 'lucide-react';
 import MultiImagePicker from '../components/MultiImagePicker';
+import ColorImagePicker from '../components/ColorImagePicker';
 
 interface ProductFormData {
   name: string;
+  nameAr?: string;
   description?: string;
+  descriptionAr?: string;
   basePrice: number;
   customizationPrice?: number;
   categoryId: string;
+  subcategoryId?: string;
   inStock: boolean;
   customizable: boolean;
 }
@@ -33,8 +38,11 @@ export default function ProductForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [colors, setColors] = useState<ProductColor[]>(defaultColors);
+  const [colorImages, setColorImages] = useState<ColorImages>({});
   const [sizes, setSizes] = useState<string[]>(defaultSizes);
   const [features, setFeatures] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState('');
@@ -44,6 +52,8 @@ export default function ProductForm() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ProductFormData>({
     defaultValues: {
@@ -52,12 +62,39 @@ export default function ProductForm() {
     },
   });
 
+  const watchCategoryId = watch('categoryId');
+
   useEffect(() => {
     fetchCategories();
     if (id) {
       fetchProduct();
     }
   }, [id]);
+
+  // Fetch subcategories when category changes
+  useEffect(() => {
+    if (watchCategoryId && watchCategoryId !== selectedCategoryId) {
+      setSelectedCategoryId(watchCategoryId);
+      fetchSubcategories(watchCategoryId);
+      // Clear subcategory when category changes (but not on initial load during edit)
+      if (selectedCategoryId !== '') {
+        setValue('subcategoryId', '');
+      }
+    } else if (!watchCategoryId) {
+      setSubcategories([]);
+      setSelectedCategoryId('');
+    }
+  }, [watchCategoryId]);
+
+  const fetchSubcategories = async (categoryId: string) => {
+    try {
+      const data = await subcategoriesApi.getByCategory(categoryId);
+      setSubcategories(data);
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+      setSubcategories([]);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -71,17 +108,26 @@ export default function ProductForm() {
   const fetchProduct = async () => {
     try {
       const product = await productsApi.getOne(id!);
+      // Pre-fetch subcategories for the product's category before setting form values
+      if (product.categoryId) {
+        setSelectedCategoryId(product.categoryId);
+        await fetchSubcategories(product.categoryId);
+      }
       reset({
         name: product.name,
+        nameAr: product.nameAr || '',
         description: product.description || '',
+        descriptionAr: product.descriptionAr || '',
         basePrice: Number(product.basePrice),
         customizationPrice: Number(product.customizationPrice),
         categoryId: product.categoryId,
+        subcategoryId: product.subcategoryId || '',
         inStock: product.inStock,
         customizable: product.customizable,
       });
       setImages(product.images);
       setColors(product.colors);
+      setColorImages(product.colorImages || {});
       setSizes(product.sizes);
       setFeatures(product.features);
     } catch (error) {
@@ -127,10 +173,14 @@ export default function ProductForm() {
     try {
       const payload: CreateProductData = {
         ...data,
+        nameAr: data.nameAr || undefined,
+        descriptionAr: data.descriptionAr || undefined,
         basePrice: Number(data.basePrice),
         customizationPrice: Number(data.customizationPrice) || 0,
+        subcategoryId: data.subcategoryId || undefined,
         images,
         colors,
+        colorImages,
         sizes,
         features,
       };
@@ -204,7 +254,7 @@ export default function ProductForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name *
+                Name (English) *
               </label>
               <input
                 type="text"
@@ -218,6 +268,21 @@ export default function ProductForm() {
               )}
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Name (Arabic) - الاسم بالعربية
+              </label>
+              <input
+                type="text"
+                dir="rtl"
+                {...register('nameAr')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category *
@@ -241,15 +306,50 @@ export default function ProductForm() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              {...register('description')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
+          {/* Subcategory dropdown - only shows when category is selected and has subcategories */}
+          {subcategories.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Subcategory
+              </label>
+              <select
+                {...register('subcategoryId')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              >
+                <option value="">None</option>
+                {subcategories.map((subcategory) => (
+                  <option key={subcategory.id} value={subcategory.id}>
+                    {subcategory.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description (English)
+              </label>
+              <textarea
+                rows={3}
+                {...register('description')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description (Arabic) - الوصف بالعربية
+              </label>
+              <textarea
+                rows={3}
+                dir="rtl"
+                {...register('descriptionAr')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              />
+            </div>
           </div>
 
           {/* Pricing */}
@@ -325,6 +425,16 @@ export default function ProductForm() {
               ))}
             </div>
           </div>
+
+          {/* Color Images */}
+          {colors.length > 0 && (
+            <ColorImagePicker
+              colors={colors}
+              colorImages={colorImages}
+              onChange={setColorImages}
+              max={10}
+            />
+          )}
 
           {/* Sizes */}
           <div>

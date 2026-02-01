@@ -14,7 +14,9 @@ export const categoriesApi = {
 
   create: async (data: {
     name: string;
+    nameAr?: string;
     description?: string;
+    descriptionAr?: string;
     image?: string;
   }): Promise<Category> => {
     const response = await client.post<Category>('/categories', data);
@@ -25,7 +27,9 @@ export const categoriesApi = {
     id: string,
     data: {
       name?: string;
+      nameAr?: string;
       description?: string;
+      descriptionAr?: string;
       image?: string;
     }
   ): Promise<Category> => {

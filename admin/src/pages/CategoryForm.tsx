@@ -7,7 +7,9 @@ import ImagePicker from '../components/ImagePicker';
 
 interface CategoryFormData {
   name: string;
+  nameAr?: string;
   description?: string;
+  descriptionAr?: string;
 }
 
 export default function CategoryForm() {
@@ -38,7 +40,9 @@ export default function CategoryForm() {
       const category = await categoriesApi.getOne(id!);
       reset({
         name: category.name,
+        nameAr: category.nameAr || '',
         description: category.description || '',
+        descriptionAr: category.descriptionAr || '',
       });
       setImage(category.image || null);
     } catch (error) {
@@ -109,12 +113,13 @@ export default function CategoryForm() {
             label="Category Image"
           />
 
+          {/* English Name */}
           <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Name *
+              Name (English) *
             </label>
             <input
               id="name"
@@ -127,18 +132,55 @@ export default function CategoryForm() {
             )}
           </div>
 
+          {/* Arabic Name */}
+          <div>
+            <label
+              htmlFor="nameAr"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Name (Arabic) - الاسم بالعربية
+            </label>
+            <input
+              id="nameAr"
+              type="text"
+              dir="rtl"
+              {...register('nameAr')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              style={{ fontFamily: 'Cairo, sans-serif' }}
+            />
+          </div>
+
+          {/* English Description */}
           <div>
             <label
               htmlFor="description"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Description
+              Description (English)
             </label>
             <textarea
               id="description"
               rows={3}
               {...register('description')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Arabic Description */}
+          <div>
+            <label
+              htmlFor="descriptionAr"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Description (Arabic) - الوصف بالعربية
+            </label>
+            <textarea
+              id="descriptionAr"
+              rows={3}
+              dir="rtl"
+              {...register('descriptionAr')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              style={{ fontFamily: 'Cairo, sans-serif' }}
             />
           </div>
 

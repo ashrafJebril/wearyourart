@@ -1,11 +1,14 @@
 import Link from 'next/link'
 import { ProductGrid } from '@/components/product'
 import { getFeaturedProducts } from '@/lib/api/client'
+import { getTranslations } from 'next-intl/server'
 
 export const dynamic = 'force-dynamic' // Always fetch fresh data
 
 export default async function HomePage() {
   const featuredProducts = await getFeaturedProducts()
+  const t = await getTranslations('home')
+  const tCommon = await getTranslations('common')
 
   return (
     <>
@@ -20,23 +23,22 @@ export default async function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-              Wear Your
+              {t('heroTitle')}
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-purple-400">
-                Creativity
+                {t('heroTitleHighlight')}
               </span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-neutral-300 max-w-xl">
-              Design custom hoodies in 3D. Upload your artwork, position it
-              perfectly, and preview it in real-time before you buy.
+              {t('heroDescription')}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <Link
                 href="/customize"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white text-neutral-900 font-semibold rounded-xl hover:bg-neutral-100 transition-colors"
               >
-                Start Designing
+                {t('startDesigning')}
                 <svg
-                  className="w-5 h-5 ml-2"
+                  className="w-5 h-5 ms-2 rtl:rotate-180"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -53,7 +55,7 @@ export default async function HomePage() {
                 href="/products"
                 className="inline-flex items-center justify-center px-8 py-4 border border-neutral-700 text-white font-semibold rounded-xl hover:bg-neutral-800 transition-colors"
               >
-                Shop Collection
+                {t('shopCollection')}
               </Link>
             </div>
           </div>
@@ -81,10 +83,10 @@ export default async function HomePage() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                Upload Your Design
+                {t('uploadDesign')}
               </h3>
               <p className="text-neutral-600">
-                Any image, logo, or artwork. We support PNG, JPG, and more.
+                {t('uploadDesignDesc')}
               </p>
             </div>
 
@@ -105,10 +107,10 @@ export default async function HomePage() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                Preview in 3D
+                {t('previewIn3D')}
               </h3>
               <p className="text-neutral-600">
-                See exactly how your hoodie will look before ordering.
+                {t('previewIn3DDesc')}
               </p>
             </div>
 
@@ -129,10 +131,10 @@ export default async function HomePage() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                Fast Delivery
+                {t('fastDelivery')}
               </h3>
               <p className="text-neutral-600">
-                Premium quality printing and shipping within 3-5 days.
+                {t('fastDeliveryDesc')}
               </p>
             </div>
           </div>
@@ -145,19 +147,19 @@ export default async function HomePage() {
           <div className="flex items-center justify-between mb-10">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-neutral-900">
-                Featured Products
+                {t('featuredProducts')}
               </h2>
               <p className="text-neutral-600 mt-2">
-                Our most popular styles, ready for your designs
+                {t('featuredProductsDesc')}
               </p>
             </div>
             <Link
               href="/products"
               className="hidden sm:inline-flex items-center text-neutral-900 font-medium hover:text-primary-600 transition-colors"
             >
-              View All
+              {tCommon('viewAll')}
               <svg
-                className="w-4 h-4 ml-1"
+                className="w-4 h-4 ms-1 rtl:rotate-180"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -176,7 +178,7 @@ export default async function HomePage() {
 
           <div className="mt-10 text-center sm:hidden">
             <Link href="/products" className="btn-secondary">
-              View All Products
+              {t('viewAllProducts')}
             </Link>
           </div>
         </div>
@@ -186,17 +188,16 @@ export default async function HomePage() {
       <section className="py-16 md:py-24 bg-neutral-900 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Create Your Custom Hoodie?
+            {t('ctaTitle')}
           </h2>
           <p className="text-lg text-neutral-400 mb-8 max-w-2xl mx-auto">
-            It only takes a few minutes to design your perfect hoodie. Upload
-            your design and see it come to life in 3D.
+            {t('ctaDescription')}
           </p>
           <Link
             href="/customize"
             className="inline-flex items-center justify-center px-8 py-4 bg-white text-neutral-900 font-semibold rounded-xl hover:bg-neutral-100 transition-colors"
           >
-            Start Customizing Now
+            {t('startCustomizingNow')}
           </Link>
         </div>
       </section>

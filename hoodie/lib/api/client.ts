@@ -23,15 +23,33 @@ async function fetchApi<T>(endpoint: string, options: FetchOptions = {}): Promis
   return response.json();
 }
 
+// Subcategories API
+export interface ApiSubcategory {
+  id: string;
+  name: string;
+  nameAr?: string;
+  slug: string;
+  description: string | null;
+  descriptionAr?: string;
+  image: string | null;
+  categoryId: string;
+  _count?: {
+    products: number;
+  };
+}
+
 // Categories API
 export interface ApiCategory {
   id: string;
   name: string;
+  nameAr?: string;
   slug: string;
   description: string | null;
+  descriptionAr?: string;
   image: string | null;
   createdAt: string;
   updatedAt: string;
+  subcategories?: ApiSubcategory[];
   _count?: {
     products: number;
   };
@@ -64,11 +82,14 @@ export interface ApiProductColor {
 export interface ApiProduct {
   id: string;
   name: string;
+  nameAr?: string;
   slug: string;
   description: string | null;
+  descriptionAr?: string;
   basePrice: string | number;
   customizationPrice: string | number;
   images: string[];
+  colorImages?: Record<string, string[]>;
   colors: ApiProductColor[];
   sizes: string[];
   features: string[];
@@ -76,6 +97,14 @@ export interface ApiProduct {
   category?: {
     id: string;
     name: string;
+    nameAr?: string;
+    slug: string;
+  };
+  subcategoryId?: string;
+  subcategory?: {
+    id: string;
+    name: string;
+    nameAr?: string;
     slug: string;
   };
   inStock: boolean;
@@ -96,6 +125,7 @@ export interface ProductsResponse {
 
 export interface ProductFilters {
   category?: string;
+  subcategory?: string;
   inStock?: string;
   search?: string;
   page?: number;
@@ -105,6 +135,7 @@ export interface ProductFilters {
 export async function getProducts(filters?: ProductFilters): Promise<ProductsResponse> {
   const params = new URLSearchParams();
   if (filters?.category) params.append('category', filters.category);
+  if (filters?.subcategory) params.append('subcategory', filters.subcategory);
   if (filters?.inStock) params.append('inStock', filters.inStock);
   if (filters?.search) params.append('search', filters.search);
   if (filters?.page) params.append('page', filters.page.toString());
@@ -222,14 +253,27 @@ export function getImageUrl(path: string): string {
 
 // Transform API product to frontend Product type
 export function transformProduct(apiProduct: ApiProduct): import('@/lib/types').Product {
+  // Transform colorImages: convert image URLs to full URLs
+  const colorImages = apiProduct.colorImages
+    ? Object.fromEntries(
+        Object.entries(apiProduct.colorImages).map(([hex, urls]) => [
+          hex,
+          urls.map(img => getImageUrl(img))
+        ])
+      )
+    : undefined;
+
   return {
     id: apiProduct.id,
     name: apiProduct.name,
+    nameAr: apiProduct.nameAr,
     description: apiProduct.description || '',
+    descriptionAr: apiProduct.descriptionAr,
     price: Number(apiProduct.basePrice),
     basePrice: Number(apiProduct.basePrice),
     customizationPrice: Number(apiProduct.customizationPrice),
     images: apiProduct.images.map(img => getImageUrl(img)),
+    colorImages,
     colors: apiProduct.colors.map(c => ({
       id: c.name.toLowerCase().replace(/\s+/g, '-'),
       name: c.name,
@@ -238,6 +282,7 @@ export function transformProduct(apiProduct: ApiProduct): import('@/lib/types').
     sizes: apiProduct.sizes,
     features: apiProduct.features,
     category: apiProduct.category?.slug || '',
+    subcategory: apiProduct.subcategory?.slug,
     tags: apiProduct.customizable ? ['customizable'] : [],
     inStock: apiProduct.inStock,
     customizable: apiProduct.customizable,
@@ -249,11 +294,23 @@ export function transformCategory(apiCategory: ApiCategory): import('@/lib/types
   return {
     id: apiCategory.id,
     name: apiCategory.name,
+    nameAr: apiCategory.nameAr,
     slug: apiCategory.slug,
     description: apiCategory.description || '',
+    descriptionAr: apiCategory.descriptionAr,
     image: apiCategory.image ? getImageUrl(apiCategory.image) : '',
     featured: true,
     productCount: apiCategory._count?.products,
+    subcategories: apiCategory.subcategories?.map(sub => ({
+      id: sub.id,
+      name: sub.name,
+      nameAr: sub.nameAr,
+      slug: sub.slug,
+      description: sub.description || '',
+      descriptionAr: sub.descriptionAr,
+      image: sub.image ? getImageUrl(sub.image) : '',
+      productCount: sub._count?.products,
+    })),
   };
 }
 

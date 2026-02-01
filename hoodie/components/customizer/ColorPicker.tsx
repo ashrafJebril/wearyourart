@@ -1,10 +1,16 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { ProductColor } from '@/lib/types'
 import { useCustomizerStore } from '@/lib/store/useCustomizerStore'
 import { colors } from '@/lib/data/products'
 
-export function ColorPicker() {
+interface ColorPickerProps {
+  productType?: 'hoodie' | 'tshirt'
+}
+
+export function ColorPicker({ productType = 'hoodie' }: ColorPickerProps) {
+  const t = useTranslations('customize')
   const { selectedColor, setSelectedColor } = useCustomizerStore()
 
   const handleColorSelect = (color: ProductColor) => {
@@ -15,7 +21,7 @@ export function ColorPicker() {
     <div>
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-medium text-neutral-900">
-          Hoodie Color
+          {productType === 'tshirt' ? t('tshirtColor') : t('hoodieColor')}
         </span>
         <span className="text-sm text-neutral-500">{selectedColor.name}</span>
       </div>

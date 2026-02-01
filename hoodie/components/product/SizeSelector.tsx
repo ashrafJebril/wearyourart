@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslations } from 'next-intl'
 
 interface SizeSelectorProps {
   sizes: string[]
@@ -46,9 +47,11 @@ function cmToInches(cm: number): string {
 export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoodie' }: SizeSelectorProps) {
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [unit, setUnit] = useState<'cm' | 'in'>('cm')
+  const t = useTranslations('products')
 
   const sizeChart = productType === 'tshirt' ? TSHIRT_SIZE_CHART : HOODIE_SIZE_CHART
-  const productName = productType === 'tshirt' ? 'T-Shirt' : 'Hoodie'
+  const sizeGuideTitle = productType === 'tshirt' ? t('tshirtSizeGuide') : t('hoodieSizeGuide')
+  const measurementsTitle = productType === 'tshirt' ? t('tshirtMeasurements') : t('hoodieMeasurements')
 
   const formatMeasurement = (cm: number) => {
     return unit === 'cm' ? `${cm}` : cmToInches(cm)
@@ -57,12 +60,12 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-neutral-900">Size</span>
+        <span className="text-sm font-medium text-neutral-900">{t('size')}</span>
         <button
           onClick={() => setShowSizeGuide(true)}
           className="text-sm text-neutral-500 hover:text-neutral-900 underline"
         >
-          Size Guide
+          {t('sizeGuide')}
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -97,7 +100,7 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
           >
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-neutral-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-              <h2 className="text-xl font-bold text-neutral-900">{productName} Size Guide</h2>
+              <h2 className="text-xl font-bold text-neutral-900">{sizeGuideTitle}</h2>
               <button
                 onClick={() => setShowSizeGuide(false)}
                 className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
@@ -111,7 +114,7 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
             <div className="p-6 space-y-6">
               {/* Unit Toggle */}
               <div className="flex items-center justify-center gap-2">
-                <span className="text-sm text-neutral-600">Unit:</span>
+                <span className="text-sm text-neutral-600">{t('unit')}:</span>
                 <div className="inline-flex rounded-lg border border-neutral-200 p-1">
                   <button
                     onClick={() => setUnit('cm')}
@@ -131,7 +134,7 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
                         : 'text-neutral-600 hover:text-neutral-900'
                     }`}
                   >
-                    Inches
+                    {t('inches')}
                   </button>
                 </div>
               </div>
@@ -139,17 +142,17 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
               {/* Garment Measurements */}
               <div>
                 <h3 className="text-sm font-semibold text-neutral-900 mb-3 uppercase tracking-wider">
-                  {productName} Measurements
+                  {measurementsTitle}
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-neutral-50">
-                        <th className="px-4 py-3 text-left font-semibold text-neutral-900 rounded-tl-lg">Size</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">Chest</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">Length</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">Shoulder</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900 rounded-tr-lg">Sleeve</th>
+                        <th className="px-4 py-3 text-left font-semibold text-neutral-900 rounded-tl-lg">{t('size')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">{t('chest')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">{t('length')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">{t('shoulder')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900 rounded-tr-lg">{t('sleeve')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -164,7 +167,7 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
                             {size}
                             {selectedSize === size && (
                               <span className="ml-2 text-xs bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">
-                                Selected
+                                {t('selected')}
                               </span>
                             )}
                           </td>
@@ -182,16 +185,16 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
               {/* Body Measurements Guide */}
               <div>
                 <h3 className="text-sm font-semibold text-neutral-900 mb-3 uppercase tracking-wider">
-                  Find Your Size (Body Measurements in CM)
+                  {t('findYourSize')}
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-neutral-50">
-                        <th className="px-4 py-3 text-left font-semibold text-neutral-900 rounded-tl-lg">Size</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">Chest</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">Waist</th>
-                        <th className="px-4 py-3 text-center font-semibold text-neutral-900 rounded-tr-lg">Height</th>
+                        <th className="px-4 py-3 text-left font-semibold text-neutral-900 rounded-tl-lg">{t('size')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">{t('chest')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900">{t('waist')}</th>
+                        <th className="px-4 py-3 text-center font-semibold text-neutral-900 rounded-tr-lg">{t('height')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -217,30 +220,30 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
 
               {/* How to Measure */}
               <div className="bg-neutral-50 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-neutral-900 mb-3">How to Measure</h3>
+                <h3 className="text-sm font-semibold text-neutral-900 mb-3">{t('howToMeasure')}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-neutral-600">
                   <div className="flex items-start gap-2">
                     <span className="w-5 h-5 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-medium text-neutral-700 flex-shrink-0">1</span>
                     <div>
-                      <span className="font-medium text-neutral-900">Chest:</span> Measure around the fullest part of your chest
+                      <span className="font-medium text-neutral-900">{t('chest')}:</span> {t('measureChest')}
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="w-5 h-5 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-medium text-neutral-700 flex-shrink-0">2</span>
                     <div>
-                      <span className="font-medium text-neutral-900">Waist:</span> Measure around your natural waistline
+                      <span className="font-medium text-neutral-900">{t('waist')}:</span> {t('measureWaist')}
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="w-5 h-5 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-medium text-neutral-700 flex-shrink-0">3</span>
                     <div>
-                      <span className="font-medium text-neutral-900">Length:</span> From top of shoulder to bottom hem
+                      <span className="font-medium text-neutral-900">{t('length')}:</span> {t('measureLength')}
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="w-5 h-5 rounded-full bg-neutral-200 flex items-center justify-center text-xs font-medium text-neutral-700 flex-shrink-0">4</span>
                     <div>
-                      <span className="font-medium text-neutral-900">Sleeve:</span> From shoulder seam to cuff
+                      <span className="font-medium text-neutral-900">{t('sleeve')}:</span> {t('measureSleeve')}
                     </div>
                   </div>
                 </div>
@@ -248,9 +251,9 @@ export function SizeSelector({ sizes, selectedSize, onSelect, productType = 'hoo
 
               {/* Tips */}
               <div className="text-sm text-neutral-500 space-y-1">
-                <p>• For a relaxed fit, choose one size up from your regular size</p>
-                <p>• If you're between sizes, we recommend going with the larger size</p>
-                <p>• All measurements have a tolerance of ±2cm</p>
+                <p>• {t('sizeTipRelaxed')}</p>
+                <p>• {t('sizeTipBetween')}</p>
+                <p>• {t('sizeTipTolerance')}</p>
               </div>
             </div>
           </div>

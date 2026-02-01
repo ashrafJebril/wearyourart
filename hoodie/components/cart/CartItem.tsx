@@ -1,7 +1,9 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { CartItem as CartItemType } from '@/lib/types'
 import { useCartStore } from '@/lib/store/useCartStore'
+import { useLocalizedContent } from '@/lib/hooks/useLocalizedContent'
 
 interface CartItemProps {
   item: CartItemType
@@ -9,7 +11,12 @@ interface CartItemProps {
 }
 
 export function CartItem({ item, showControls = true }: CartItemProps) {
+  const t = useTranslations('cart')
+  const { getName } = useLocalizedContent()
   const { updateQuantity, removeItem } = useCartStore()
+
+  // Get localized name
+  const itemName = getName({ name: item.name, nameAr: item.nameAr })
 
   return (
     <div className="flex gap-4 py-4 border-b border-neutral-100 last:border-0">
@@ -27,6 +34,12 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
               className="absolute inset-2 w-auto h-auto max-w-[60%] max-h-[60%] m-auto object-contain"
             />
           </div>
+        ) : item.image ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-cover"
+          />
         ) : (
           <div
             className="w-full h-full"
@@ -37,12 +50,12 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
 
       {/* Details */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-neutral-900 truncate">{item.name}</h3>
+        <h3 className="font-medium text-neutral-900 truncate">{itemName}</h3>
         <p className="text-sm text-neutral-500">
           {item.color.name} / {item.size}
         </p>
         {item.customization && (
-          <p className="text-sm text-primary-600">Custom Design</p>
+          <p className="text-sm text-primary-600">{t('customDesign')}</p>
         )}
 
         {showControls && (
@@ -75,7 +88,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
               onClick={() => removeItem(item.id)}
               className="text-sm text-neutral-500 hover:text-red-600 transition-colors"
             >
-              Remove
+              {t('remove')}
             </button>
           </div>
         )}
@@ -87,7 +100,7 @@ export function CartItem({ item, showControls = true }: CartItemProps) {
           {(item.price * item.quantity).toFixed(2)} JD
         </p>
         {item.quantity > 1 && (
-          <p className="text-sm text-neutral-500">{item.price.toFixed(2)} JD each</p>
+          <p className="text-sm text-neutral-500">{item.price.toFixed(2)} JD {t('each')}</p>
         )}
       </div>
     </div>

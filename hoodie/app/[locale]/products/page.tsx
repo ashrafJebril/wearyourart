@@ -5,16 +5,21 @@ import { ProductsContent } from './ProductsContent'
 export const dynamic = 'force-dynamic' // Always fetch fresh data
 
 interface ProductsPageProps {
-  searchParams: Promise<{ category?: string }>
+  searchParams: Promise<{ category?: string; subcategory?: string }>
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams
   const selectedCategory = params.category
+  const selectedSubcategory = params.subcategory
 
   // Fetch data server-side
   const [productsResponse, categories] = await Promise.all([
-    getAllProducts({ category: selectedCategory, limit: 100 }),
+    getAllProducts({
+      category: selectedCategory,
+      subcategory: selectedSubcategory,
+      limit: 100
+    }),
     getAllCategories(),
   ])
 
@@ -24,14 +29,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     0
   )
 
-  // Get current category details if filtered
+  // Get current category details from fetched categories (which include subcategories)
   let currentCategory = null
   if (selectedCategory) {
-    try {
-      currentCategory = await getCategory(selectedCategory)
-    } catch {
-      // Category not found, ignore
-    }
+    currentCategory = categories.find(cat => cat.slug === selectedCategory) || null
   }
 
   return (
@@ -41,6 +42,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         categories={categories}
         currentCategory={currentCategory}
         selectedCategorySlug={selectedCategory}
+        selectedSubcategorySlug={selectedSubcategory}
         totalProductCount={totalProductCount}
       />
     </Suspense>

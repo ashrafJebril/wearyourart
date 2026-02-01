@@ -1,5 +1,5 @@
 import client from './client';
-import { Product, Pagination, ProductColor } from '../types';
+import { Product, Pagination, ProductColor, ColorImages } from '../types';
 
 interface ProductsResponse {
   products: Product[];
@@ -16,28 +16,36 @@ interface ProductFilters {
 
 export interface CreateProductData {
   name: string;
+  nameAr?: string;
   description?: string;
+  descriptionAr?: string;
   basePrice: number;
   customizationPrice?: number;
   images?: string[];
   colors?: ProductColor[];
+  colorImages?: ColorImages;
   sizes?: string[];
   features?: string[];
   categoryId: string;
+  subcategoryId?: string;
   inStock?: boolean;
   customizable?: boolean;
 }
 
 export interface UpdateProductData {
   name?: string;
+  nameAr?: string;
   description?: string;
+  descriptionAr?: string;
   basePrice?: number;
   customizationPrice?: number;
   images?: string[];
   colors?: ProductColor[];
+  colorImages?: ColorImages;
   sizes?: string[];
   features?: string[];
   categoryId?: string;
+  subcategoryId?: string;
   inStock?: boolean;
   customizable?: boolean;
 }

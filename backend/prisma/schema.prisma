@@ -8,29 +8,56 @@ datasource db {
 }
 
 model Category {
-  id          String    @id @default(uuid())
-  name        String    @unique
-  slug        String    @unique
-  description String?
-  image       String?
-  products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String        @id @default(uuid())
+  name          String        @unique
+  nameAr        String?
+  slug          String        @unique
+  description   String?
+  descriptionAr String?
+  image         String?
+  products      Product[]
+  subcategories Subcategory[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Subcategory {
+  id            String    @id @default(uuid())
+  name          String
+  nameAr        String?
+  slug          String
+  description   String?
+  descriptionAr String?
+  image         String?
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products      Product[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([categoryId, slug])
+  @@unique([categoryId, name])
+  @@index([categoryId])
 }
 
 model Product {
   id                 String        @id @default(uuid())
   name               String
+  nameAr             String?
   slug               String        @unique
   description        String?
+  descriptionAr      String?
   basePrice          Decimal       @db.Decimal(10, 2)
   customizationPrice Decimal       @default(0) @db.Decimal(10, 2)
   images             String[]
   colors             Json
+  colorImages        Json?
   sizes              String[]
   features           String[]
   categoryId         String
   category           Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subcategoryId      String?
+  subcategory        Subcategory?  @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
   inStock            Boolean       @default(true)
   customizable       Boolean       @default(true)
   orderItems         OrderItem[]
@@ -39,6 +66,7 @@ model Product {
   updatedAt          DateTime      @updatedAt
 
   @@index([categoryId])
+  @@index([subcategoryId])
 }
 
 model DesignImage {

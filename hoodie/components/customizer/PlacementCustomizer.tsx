@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 import {
   useCustomizerStore,
   AVAILABLE_FONTS,
@@ -30,14 +31,16 @@ const TEXT_COLORS = [
   { name: "Orange", hex: "#f97316" },
 ];
 
-const PLACEMENT_TABS: { id: PlacementArea; label: string }[] = [
-  { id: "front", label: "Front" },
-  { id: "back", label: "Back" },
-  { id: "leftShoulder", label: "Left" },
-  { id: "rightShoulder", label: "Right" },
-];
-
 export function PlacementCustomizer() {
+  const t = useTranslations("customize");
+  const tCommon = useTranslations("common");
+
+  const PLACEMENT_TABS: { id: PlacementArea; labelKey: string }[] = [
+    { id: "front", labelKey: "front" },
+    { id: "back", labelKey: "back" },
+    { id: "leftShoulder", labelKey: "left" },
+    { id: "rightShoulder", labelKey: "right" },
+  ];
   const frontFileRef = useRef<HTMLInputElement>(null);
   const backFileRef = useRef<HTMLInputElement>(null);
   const leftFileRef = useRef<HTMLInputElement>(null);
@@ -185,7 +188,7 @@ export function PlacementCustomizer() {
           textRotation: textRotation,
           setTextRotation: setTextRotation,
           fileRef: frontFileRef,
-          positionRange: { xMin: -10, xMax: 10, yMin: -90, yMax: 40 },
+          positionRange: { xMin: -10, xMax: 10, yMin: -90, yMax: -8 },
           hasTextPosition: true,
         };
       case "back":
@@ -211,7 +214,7 @@ export function PlacementCustomizer() {
           textRotation: backTextRotation,
           setTextRotation: setBackTextRotation,
           fileRef: backFileRef,
-          positionRange: { xMin: -10, xMax: 10, yMin: -90, yMax: 40 },
+          positionRange: { xMin: -10, xMax: 10, yMin: -40, yMax: -8 },
           hasTextPosition: true,
         };
       case "leftShoulder":
@@ -426,7 +429,7 @@ export function PlacementCustomizer() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-gray-700">Design Placement</h3>
+      <h3 className="text-sm font-medium text-gray-700">{t("designPlacement")}</h3>
 
       {/* Placement Tabs */}
       <div className="flex rounded-lg bg-neutral-100 p-1">
@@ -440,7 +443,7 @@ export function PlacementCustomizer() {
                 : "text-neutral-600 hover:text-neutral-900"
             }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
             {hasContent(tab.id) && (
               <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full" />
             )}
@@ -513,7 +516,7 @@ export function PlacementCustomizer() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <span className="text-sm text-green-600">Uploading image...</span>
+          <span className="text-sm text-green-600">{t("uploadingImage")}</span>
         </div>
       )}
 
@@ -540,13 +543,13 @@ export function PlacementCustomizer() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <span className="text-sm text-blue-600">Removing background...</span>
+          <span className="text-sm text-blue-600">{t("removingBackground")}</span>
         </div>
       )}
 
       {/* Image Upload */}
       <div>
-        <label className="block text-sm text-neutral-600 mb-2">Add Image</label>
+        <label className="block text-sm text-neutral-600 mb-2">{t("addImage")}</label>
         {data.image ? (
           <div className="space-y-2">
             <div className="relative">
@@ -597,7 +600,7 @@ export function PlacementCustomizer() {
                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                   />
                 </svg>
-                Remove Background
+                {t("removeBackground")}
               </button>
             )}
             {bgRemoved && (
@@ -615,7 +618,7 @@ export function PlacementCustomizer() {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                Background Removed
+                {t("backgroundRemoved")}
               </div>
             )}
           </div>
@@ -638,7 +641,7 @@ export function PlacementCustomizer() {
                   d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
                 />
               </svg>
-              <span>Upload</span>
+              <span>{t("upload")}</span>
             </button>
             <button
               onClick={() => setShowLibrary(true)}
@@ -657,7 +660,7 @@ export function PlacementCustomizer() {
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <span>Library</span>
+              <span>{t("library")}</span>
             </button>
           </div>
         )}
@@ -667,18 +670,18 @@ export function PlacementCustomizer() {
       {(activePlacement === "front" || activePlacement === "back") && (
         <div>
           <label className="block text-sm text-neutral-600 mb-2">
-            Add Text
+            {t("addText")}
           </label>
           <input
             type="text"
             value={data.text}
             onChange={(e) => data.setText(e.target.value)}
-            placeholder="Enter text..."
+            placeholder={t("enterText")}
             maxLength={20}
             className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent outline-none text-sm"
           />
           <p className="text-xs text-neutral-400 mt-1">
-            {data.text.length}/20 characters
+            {data.text.length}/20 {t("characters")}
           </p>
         </div>
       )}
@@ -687,7 +690,7 @@ export function PlacementCustomizer() {
       {data.text &&
         (activePlacement === "front" || activePlacement === "back") && (
           <div className="relative">
-            <label className="block text-sm text-neutral-600 mb-2">Font</label>
+            <label className="block text-sm text-neutral-600 mb-2">{t("font")}</label>
             <button
               type="button"
               onClick={() => setShowFontDropdown(!showFontDropdown)}
@@ -740,7 +743,7 @@ export function PlacementCustomizer() {
         (activePlacement === "front" || activePlacement === "back") && (
           <div>
             <label className="block text-sm text-neutral-600 mb-2">
-              Text Color
+              {t("textColor")}
             </label>
             <div className="flex flex-wrap gap-2">
               {TEXT_COLORS.map((color) => (
@@ -767,13 +770,13 @@ export function PlacementCustomizer() {
           {data.image && (
             <>
               <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
-                Image Position
+                {t("imagePosition")}
               </p>
 
               {/* Horizontal Position */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Horizontal</label>
+                  <label className="text-xs text-neutral-600">{t("horizontal")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.position.x.toFixed(0)}
                   </span>
@@ -794,7 +797,7 @@ export function PlacementCustomizer() {
               {/* Vertical Position */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Vertical</label>
+                  <label className="text-xs text-neutral-600">{t("vertical")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.position.y.toFixed(0)}
                   </span>
@@ -815,7 +818,7 @@ export function PlacementCustomizer() {
               {/* Scale */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Size</label>
+                  <label className="text-xs text-neutral-600">{t("size")}</label>
                   <span className="text-xs text-neutral-500">
                     {Math.round(data.scale * 100)}%
                   </span>
@@ -834,7 +837,7 @@ export function PlacementCustomizer() {
               {/* Rotation */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Rotation</label>
+                  <label className="text-xs text-neutral-600">{t("rotation")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.rotation}°
                   </span>
@@ -856,13 +859,13 @@ export function PlacementCustomizer() {
           {data.text && data.hasTextPosition && (
             <>
               <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide mt-4">
-                Text Position
+                {t("textPosition")}
               </p>
 
               {/* Text Horizontal */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Horizontal</label>
+                  <label className="text-xs text-neutral-600">{t("horizontal")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.textPosition.x.toFixed(0)}
                   </span>
@@ -883,7 +886,7 @@ export function PlacementCustomizer() {
               {/* Text Vertical */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Vertical</label>
+                  <label className="text-xs text-neutral-600">{t("vertical")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.textPosition.y.toFixed(0)}
                   </span>
@@ -904,7 +907,7 @@ export function PlacementCustomizer() {
               {/* Text Scale */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Text Size</label>
+                  <label className="text-xs text-neutral-600">{t("textSize")}</label>
                   <span className="text-xs text-neutral-500">
                     {Math.round(data.textScale * 100)}%
                   </span>
@@ -926,7 +929,7 @@ export function PlacementCustomizer() {
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-xs text-neutral-600">
-                    Text Rotation
+                    {t("textRotation")}
                   </label>
                   <span className="text-xs text-neutral-500">
                     {data.textRotation}°
@@ -953,7 +956,7 @@ export function PlacementCustomizer() {
               {/* Horizontal Position */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Horizontal</label>
+                  <label className="text-xs text-neutral-600">{t("horizontal")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.position.x.toFixed(0)}
                   </span>
@@ -974,7 +977,7 @@ export function PlacementCustomizer() {
               {/* Vertical Position */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Vertical</label>
+                  <label className="text-xs text-neutral-600">{t("vertical")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.position.y.toFixed(0)}
                   </span>
@@ -995,7 +998,7 @@ export function PlacementCustomizer() {
               {/* Scale */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Size</label>
+                  <label className="text-xs text-neutral-600">{t("size")}</label>
                   <span className="text-xs text-neutral-500">
                     {Math.round(data.scale * 100)}%
                   </span>
@@ -1014,7 +1017,7 @@ export function PlacementCustomizer() {
               {/* Rotation */}
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs text-neutral-600">Rotation</label>
+                  <label className="text-xs text-neutral-600">{t("rotation")}</label>
                   <span className="text-xs text-neutral-500">
                     {data.rotation}°
                   </span>
@@ -1038,13 +1041,13 @@ export function PlacementCustomizer() {
               onClick={handleReset}
               className="flex-1 py-1.5 text-xs text-neutral-600 hover:text-neutral-900 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
             >
-              Reset Position
+              {t("resetPosition")}
             </button>
             <button
               onClick={handleClear}
               className="flex-1 py-1.5 text-xs text-red-600 hover:text-red-700 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
             >
-              Clear All
+              {t("clearAll")}
             </button>
           </div>
         </div>
@@ -1070,7 +1073,7 @@ export function PlacementCustomizer() {
             <div className="bg-white w-[90vw] max-w-4xl max-h-[80vh] rounded-xl flex flex-col overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b">
                 <h3 className="text-xl font-semibold text-neutral-900">
-                  Select from Image Library
+                  {t("selectFromLibrary")}
                 </h3>
                 <button
                   onClick={() => setShowLibrary(false)}
@@ -1113,10 +1116,10 @@ export function PlacementCustomizer() {
                       />
                     </svg>
                     <h3 className="mt-4 text-lg font-medium text-neutral-900">
-                      No images available
+                      {t("noImagesAvailable")}
                     </h3>
                     <p className="mt-2 text-base text-neutral-500">
-                      Upload your own image instead.
+                      {t("uploadYourOwn")}
                     </p>
                   </div>
                 ) : (
@@ -1134,7 +1137,7 @@ export function PlacementCustomizer() {
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
                           <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
-                            Select
+                            {t("select")}
                           </span>
                         </div>
                       </button>
@@ -1148,7 +1151,7 @@ export function PlacementCustomizer() {
                   onClick={() => setShowLibrary(false)}
                   className="px-6 py-3 text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-100 transition-colors font-medium"
                 >
-                  Cancel
+                  {tCommon("cancel")}
                 </button>
               </div>
             </div>

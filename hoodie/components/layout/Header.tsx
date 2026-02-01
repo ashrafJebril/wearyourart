@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation'
 import { useCartStore } from '@/lib/store/useCartStore'
 import { useUIStore } from '@/lib/store/useUIStore'
 import { Category, Product } from '@/lib/types'
+import { LanguageSwitcher } from './LanguageSwitcher'
+import { useTranslations } from 'next-intl'
+import { useLocalizedContent } from '@/lib/hooks'
 
 interface HeaderProps {
   categories?: Category[]
@@ -16,6 +19,8 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
   const pathname = usePathname()
   const { getTotalItems, openCart } = useCartStore()
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useUIStore()
+  const t = useTranslations('common')
+  const { getName } = useLocalizedContent()
   const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false)
   const [isCustomizeDropdownOpen, setIsCustomizeDropdownOpen] = useState(false)
   const [isMobileShopOpen, setIsMobileShopOpen] = useState(false)
@@ -31,12 +36,12 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2" onClick={closeMobileMenu}>
+          <Link href="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
             <span className="text-2xl font-bold tracking-tight">HOODIE</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center gap-8">
             <Link
               href="/"
               className={`text-sm font-medium transition-colors duration-200 ${
@@ -45,7 +50,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                   : 'text-neutral-500 hover:text-neutral-900'
               }`}
             >
-              Home
+              {t('home')}
             </Link>
 
             {/* Shop Dropdown */}
@@ -62,7 +67,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                     : 'text-neutral-500 hover:text-neutral-900'
                 }`}
               >
-                Shop
+                {t('shop')}
                 <svg
                   className={`w-4 h-4 transition-transform duration-200 ${isShopDropdownOpen ? 'rotate-180' : ''}`}
                   fill="none"
@@ -81,7 +86,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                       href="/products"
                       className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 font-medium"
                     >
-                      All Products
+                      {t('allProducts')}
                     </Link>
                     {categories.length > 0 && (
                       <>
@@ -92,7 +97,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                             href={`/products?category=${category.slug}`}
                             className="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
                           >
-                            {category.name}
+                            {getName(category)}
                           </Link>
                         ))}
                       </>
@@ -115,7 +120,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                     : 'text-neutral-500 hover:text-neutral-900'
                 }`}
               >
-                Customize
+                {t('customize')}
                 <svg
                   className={`w-4 h-4 transition-transform duration-200 ${isCustomizeDropdownOpen ? 'rotate-180' : ''}`}
                   fill="none"
@@ -131,7 +136,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                 <div className="absolute top-full left-0 pt-2">
                   <div className="w-56 bg-white rounded-lg shadow-lg border border-neutral-100 py-2 animate-fade-in">
                     <p className="px-4 py-2 text-xs text-neutral-400 uppercase tracking-wider">
-                      Choose a product to customize
+                      {t('chooseProductToCustomize')}
                     </p>
                     {customizableProducts.length > 0 ? (
                       customizableProducts.map((product) => (
@@ -140,12 +145,12 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                           href={`/customize?product=${product.id}`}
                           className="block px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
                         >
-                          {product.name}
+                          {getName(product)}
                         </Link>
                       ))
                     ) : (
                       <p className="px-4 py-2 text-sm text-neutral-500">
-                        No customizable products available
+                        {t('noCustomizableProducts')}
                       </p>
                     )}
                   </div>
@@ -155,7 +160,12 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Language Switcher - Hidden on small screens, shown in mobile menu */}
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
+
             {/* Cart Button */}
             <button
               onClick={openCart}
@@ -212,7 +222,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                     : 'text-neutral-500 hover:text-neutral-900'
                 }`}
               >
-                Home
+                {t('home')}
               </Link>
 
               {/* Mobile Shop Accordion */}
@@ -225,7 +235,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                       : 'text-neutral-500 hover:text-neutral-900'
                   }`}
                 >
-                  Shop
+                  {t('shop')}
                   <svg
                     className={`w-4 h-4 transition-transform duration-200 ${isMobileShopOpen ? 'rotate-180' : ''}`}
                     fill="none"
@@ -243,7 +253,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                       onClick={closeMobileMenu}
                       className="block py-1 text-sm text-neutral-600 hover:text-neutral-900 font-medium"
                     >
-                      All Products
+                      {t('allProducts')}
                     </Link>
                     {categories.map((category) => (
                       <Link
@@ -252,7 +262,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                         onClick={closeMobileMenu}
                         className="block py-1 text-sm text-neutral-500 hover:text-neutral-900"
                       >
-                        {category.name}
+                        {getName(category)}
                       </Link>
                     ))}
                   </div>
@@ -269,7 +279,7 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                       : 'text-neutral-500 hover:text-neutral-900'
                   }`}
                 >
-                  Customize
+                  {t('customize')}
                   <svg
                     className={`w-4 h-4 transition-transform duration-200 ${isMobileCustomizeOpen ? 'rotate-180' : ''}`}
                     fill="none"
@@ -290,16 +300,21 @@ export function Header({ categories = [], customizableProducts = [] }: HeaderPro
                           onClick={closeMobileMenu}
                           className="block py-1 text-sm text-neutral-500 hover:text-neutral-900"
                         >
-                          {product.name}
+                          {getName(product)}
                         </Link>
                       ))
                     ) : (
                       <p className="py-1 text-sm text-neutral-400">
-                        No customizable products
+                        {t('noCustomizableProducts')}
                       </p>
                     )}
                   </div>
                 )}
+              </div>
+
+              {/* Language Switcher for Mobile */}
+              <div className="pt-4 border-t border-neutral-100 mt-4">
+                <LanguageSwitcher />
               </div>
             </nav>
           </div>

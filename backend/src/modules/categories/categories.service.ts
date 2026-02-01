@@ -17,6 +17,14 @@ export class CategoriesService {
         _count: {
           select: { products: true },
         },
+        subcategories: {
+          include: {
+            _count: {
+              select: { products: true },
+            },
+          },
+          orderBy: { name: 'asc' },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });

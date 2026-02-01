@@ -18,7 +18,15 @@ export class UpdateProductDto {
 
   @IsString()
   @IsOptional()
+  nameAr?: string;
+
+  @IsString()
+  @IsOptional()
   description?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionAr?: string;
 
   @Type(() => Number)
   @IsNumber({ maxDecimalPlaces: 2 })
@@ -41,6 +49,9 @@ export class UpdateProductDto {
   @IsOptional()
   colors?: Array<{ name: string; hex: string }>;
 
+  @IsOptional()
+  colorImages?: Record<string, string[]>;
+
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
@@ -54,6 +65,10 @@ export class UpdateProductDto {
   @IsUUID()
   @IsOptional()
   categoryId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  subcategoryId?: string;
 
   @IsBoolean()
   @IsOptional()

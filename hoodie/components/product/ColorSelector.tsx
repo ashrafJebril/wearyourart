@@ -1,4 +1,7 @@
+'use client'
+
 import { ProductColor } from '@/lib/types'
+import { useTranslations } from 'next-intl'
 
 interface ColorSelectorProps {
   colors: ProductColor[]
@@ -7,11 +10,13 @@ interface ColorSelectorProps {
 }
 
 export function ColorSelector({ colors, selectedColor, onSelect }: ColorSelectorProps) {
+  const t = useTranslations('products')
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-medium text-neutral-900">
-          Color: <span className="font-normal text-neutral-600">{selectedColor.name}</span>
+          {t('color')}: <span className="font-normal text-neutral-600">{selectedColor.name}</span>
         </span>
       </div>
       <div className="flex flex-wrap gap-2">

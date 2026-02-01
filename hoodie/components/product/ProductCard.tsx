@@ -1,11 +1,21 @@
+'use client'
+
 import Link from 'next/link'
 import { Product } from '@/lib/types'
+import { useLocalizedContent } from '@/lib/hooks'
+import { useTranslations } from 'next-intl'
 
 interface ProductCardProps {
   product: Product
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { getName, getDescription } = useLocalizedContent()
+  const t = useTranslations('products')
+
+  const localizedName = getName(product)
+  const localizedDescription = getDescription(product)
+
   return (
     <Link href={`/products/${product.id}`} className="group block h-full">
       <div className="card-hover h-full flex flex-col">
@@ -13,7 +23,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="aspect-square bg-neutral-100 relative overflow-hidden flex-shrink-0">
           <img
             src={product.images[0]}
-            alt={product.name}
+            alt={localizedName}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           {product.tags.includes('bestseller') && (
@@ -23,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           {product.customizable && (
             <span className="absolute top-3 right-3 px-2 py-1 bg-primary-600 text-white text-xs font-medium rounded">
-              Customizable
+              {t('customizable')}
             </span>
           )}
         </div>
@@ -31,10 +41,10 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Info */}
         <div className="p-4 flex flex-col flex-grow">
           <h3 className="font-medium text-neutral-900 group-hover:text-primary-600 transition-colors">
-            {product.name}
+            {localizedName}
           </h3>
           <p className="text-sm text-neutral-500 mt-1 line-clamp-2 flex-grow">
-            {product.description}
+            {localizedDescription}
           </p>
           <div className="flex items-center justify-between mt-3">
             <p className="font-semibold text-neutral-900">

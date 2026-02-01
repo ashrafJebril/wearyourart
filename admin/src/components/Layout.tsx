@@ -15,6 +15,7 @@ import { useState } from 'react';
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/categories', icon: FolderTree, label: 'Categories' },
+  { to: '/subcategories', icon: FolderTree, label: 'Subcategories' },
   { to: '/products', icon: Package, label: 'Products' },
   { to: '/orders', icon: ShoppingCart, label: 'Orders' },
   { to: '/media', icon: Image, label: 'Media Library' },

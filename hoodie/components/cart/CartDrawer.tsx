@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useCartStore } from '@/lib/store/useCartStore'
 import { CartItem } from './CartItem'
 
 export function CartDrawer() {
+  const t = useTranslations('cart')
   const { items, isCartOpen, closeCart, getTotalPrice } = useCartStore()
   const total = getTotalPrice()
 
@@ -23,7 +25,7 @@ export function CartDrawer() {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
-            <h2 className="text-lg font-semibold">Your Cart ({items.length})</h2>
+            <h2 className="text-lg font-semibold">{t('yourCart')} ({items.length})</h2>
             <button
               onClick={closeCart}
               className="p-2 text-neutral-500 hover:text-neutral-900 transition-colors"
@@ -41,13 +43,13 @@ export function CartDrawer() {
                 <svg className="w-16 h-16 text-neutral-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <p className="text-neutral-500 mb-4">Your cart is empty</p>
+                <p className="text-neutral-500 mb-4">{t('emptyCart')}</p>
                 <Link
                   href="/products"
                   onClick={closeCart}
                   className="btn-primary"
                 >
-                  Start Shopping
+                  {t('startShopping')}
                 </Link>
               </div>
             ) : (
@@ -63,25 +65,25 @@ export function CartDrawer() {
           {items.length > 0 && (
             <div className="border-t border-neutral-100 px-6 py-4 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600">Subtotal</span>
+                <span className="text-neutral-600">{t('subtotal')}</span>
                 <span className="text-lg font-semibold">{total.toFixed(2)} JD</span>
               </div>
               <p className="text-sm text-neutral-500">
-                Shipping and taxes calculated at checkout.
+                {t('shippingTaxesNote')}
               </p>
               <Link
                 href="/checkout"
                 onClick={closeCart}
                 className="btn-primary w-full text-center"
               >
-                Checkout
+                {t('checkout')}
               </Link>
               <Link
                 href="/cart"
                 onClick={closeCart}
                 className="btn-secondary w-full text-center"
               >
-                View Full Cart
+                {t('viewFullCart')}
               </Link>
             </div>
           )}

@@ -14,17 +14,22 @@ export class ProductsService {
 
   async findAll(query: {
     category?: string;
+    subcategory?: string;
     inStock?: string;
     search?: string;
     page?: string;
     limit?: string;
   }) {
-    const { category, inStock, search, page = '1', limit = '20' } = query;
+    const { category, subcategory, inStock, search, page = '1', limit = '20' } = query;
 
     const where: Prisma.ProductWhereInput = {};
 
     if (category) {
       where.category = { slug: category };
+    }
+
+    if (subcategory) {
+      where.subcategory = { slug: subcategory };
     }
 
     if (inStock !== undefined) {
@@ -46,6 +51,9 @@ export class ProductsService {
         where,
         include: {
           category: {
+            select: { id: true, name: true, slug: true },
+          },
+          subcategory: {
             select: { id: true, name: true, slug: true },
           },
         },
@@ -74,6 +82,9 @@ export class ProductsService {
         category: {
           select: { id: true, name: true, slug: true },
         },
+        subcategory: {
+          select: { id: true, name: true, slug: true },
+        },
       },
     });
 
@@ -89,6 +100,9 @@ export class ProductsService {
       where: { slug },
       include: {
         category: {
+          select: { id: true, name: true, slug: true },
+        },
+        subcategory: {
           select: { id: true, name: true, slug: true },
         },
       },
@@ -122,6 +136,25 @@ export class ProductsService {
       );
     }
 
+    // Validate subcategory belongs to category if provided
+    if (createProductDto.subcategoryId) {
+      const subcategory = await this.prisma.subcategory.findUnique({
+        where: { id: createProductDto.subcategoryId },
+      });
+
+      if (!subcategory) {
+        throw new NotFoundException(
+          `Subcategory with ID ${createProductDto.subcategoryId} not found`,
+        );
+      }
+
+      if (subcategory.categoryId !== createProductDto.categoryId) {
+        throw new ConflictException(
+          'Subcategory does not belong to the selected category',
+        );
+      }
+    }
+
     return this.prisma.product.create({
       data: {
         name: createProductDto.name,
@@ -131,9 +164,11 @@ export class ProductsService {
         customizationPrice: createProductDto.customizationPrice || 0,
         images: createProductDto.images || [],
         colors: createProductDto.colors || [],
+        colorImages: createProductDto.colorImages || {},
         sizes: createProductDto.sizes || [],
         features: createProductDto.features || [],
         categoryId: createProductDto.categoryId,
+        subcategoryId: createProductDto.subcategoryId || null,
         inStock: createProductDto.inStock ?? true,
         customizable: createProductDto.customizable ?? true,
       },
@@ -141,26 +176,29 @@ export class ProductsService {
         category: {
           select: { id: true, name: true, slug: true },
         },
+        subcategory: {
+          select: { id: true, name: true, slug: true },
+        },
       },
     });
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    await this.findOne(id);
+    const existingProduct = await this.findOne(id);
 
     const data: any = { ...updateProductDto };
 
     if (updateProductDto.name) {
       data.slug = this.generateSlug(updateProductDto.name);
 
-      const existingProduct = await this.prisma.product.findFirst({
+      const duplicateProduct = await this.prisma.product.findFirst({
         where: {
           slug: data.slug,
           NOT: { id },
         },
       });
 
-      if (existingProduct) {
+      if (duplicateProduct) {
         throw new ConflictException('Product with this name already exists');
       }
     }
@@ -177,11 +215,38 @@ export class ProductsService {
       }
     }
 
+    // Validate subcategory belongs to category if provided
+    if (updateProductDto.subcategoryId !== undefined) {
+      if (updateProductDto.subcategoryId === null || updateProductDto.subcategoryId === '') {
+        data.subcategoryId = null;
+      } else {
+        const subcategory = await this.prisma.subcategory.findUnique({
+          where: { id: updateProductDto.subcategoryId },
+        });
+
+        if (!subcategory) {
+          throw new NotFoundException(
+            `Subcategory with ID ${updateProductDto.subcategoryId} not found`,
+          );
+        }
+
+        const categoryId = updateProductDto.categoryId || existingProduct.categoryId;
+        if (subcategory.categoryId !== categoryId) {
+          throw new ConflictException(
+            'Subcategory does not belong to the selected category',
+          );
+        }
+      }
+    }
+
     return this.prisma.product.update({
       where: { id },
       data,
       include: {
         category: {
+          select: { id: true, name: true, slug: true },
+        },
+        subcategory: {
           select: { id: true, name: true, slug: true },
         },
       },

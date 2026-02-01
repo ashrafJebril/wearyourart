@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Categories from './pages/Categories';
 import CategoryForm from './pages/CategoryForm';
+import Subcategories from './pages/Subcategories';
+import SubcategoryForm from './pages/SubcategoryForm';
 import Products from './pages/Products';
 import ProductForm from './pages/ProductForm';
 import Orders from './pages/Orders';
@@ -46,6 +48,9 @@ function App() {
         <Route path="categories" element={<Categories />} />
         <Route path="categories/new" element={<CategoryForm />} />
         <Route path="categories/:id/edit" element={<CategoryForm />} />
+        <Route path="subcategories" element={<Subcategories />} />
+        <Route path="subcategories/new" element={<SubcategoryForm />} />
+        <Route path="subcategories/:id/edit" element={<SubcategoryForm />} />
         <Route path="products" element={<Products />} />
         <Route path="products/new" element={<ProductForm />} />
         <Route path="products/:id/edit" element={<ProductForm />} />

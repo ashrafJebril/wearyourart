@@ -1,3 +1,7 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
+
 interface QuantitySelectorProps {
   quantity: number
   onChange: (quantity: number) => void
@@ -11,6 +15,8 @@ export function QuantitySelector({
   min = 1,
   max = 10,
 }: QuantitySelectorProps) {
+  const t = useTranslations('products')
+
   const decrease = () => {
     if (quantity > min) {
       onChange(quantity - 1)
@@ -25,7 +31,7 @@ export function QuantitySelector({
 
   return (
     <div>
-      <span className="text-sm font-medium text-neutral-900 mb-3 block">Quantity</span>
+      <span className="text-sm font-medium text-neutral-900 mb-3 block">{t('quantity')}</span>
       <div className="inline-flex items-center border border-neutral-200 rounded-lg">
         <button
           onClick={decrease}

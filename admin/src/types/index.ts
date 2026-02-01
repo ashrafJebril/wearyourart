@@ -4,12 +4,36 @@ export interface Admin {
   name: string;
 }
 
+export interface Subcategory {
+  id: string;
+  name: string;
+  nameAr?: string;
+  slug: string;
+  description?: string;
+  descriptionAr?: string;
+  image?: string;
+  categoryId: string;
+  category?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    products: number;
+  };
+}
+
 export interface Category {
   id: string;
   name: string;
+  nameAr?: string;
   slug: string;
   description?: string;
+  descriptionAr?: string;
   image?: string;
+  subcategories?: Subcategory[];
   createdAt: string;
   updatedAt: string;
   _count?: {
@@ -22,19 +46,30 @@ export interface ProductColor {
   hex: string;
 }
 
+export type ColorImages = Record<string, string[]>;
+
 export interface Product {
   id: string;
   name: string;
+  nameAr?: string;
   slug: string;
   description?: string;
+  descriptionAr?: string;
   basePrice: number;
   customizationPrice: number;
   images: string[];
   colors: ProductColor[];
+  colorImages?: ColorImages;
   sizes: string[];
   features: string[];
   categoryId: string;
   category?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  subcategoryId?: string;
+  subcategory?: {
     id: string;
     name: string;
     slug: string;

@@ -1,25 +1,45 @@
+export interface Subcategory {
+  id: string
+  name: string
+  nameAr?: string
+  slug: string
+  description: string
+  descriptionAr?: string
+  image: string
+  productCount?: number
+}
+
 export interface Category {
   id: string
   name: string
+  nameAr?: string
   slug: string
   description: string
+  descriptionAr?: string
   image: string
   featured: boolean
   productCount?: number
+  subcategories?: Subcategory[]
 }
+
+export type ColorImages = Record<string, string[]>
 
 export interface Product {
   id: string
   name: string
+  nameAr?: string
   description: string
+  descriptionAr?: string
   price: number
   basePrice: number
   customizationPrice: number
   images: string[]
+  colorImages?: ColorImages
   colors: ProductColor[]
   sizes: string[]
   features: string[]
   category: string
+  subcategory?: string
   tags: string[]
   inStock: boolean
   customizable: boolean
@@ -35,6 +55,7 @@ export interface CartItem {
   id: string
   productId: string
   name: string
+  nameAr?: string
   color: ProductColor
   size: string
   quantity: number
