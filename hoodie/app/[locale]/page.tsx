@@ -2,11 +2,18 @@ import Link from 'next/link'
 import { ProductGrid } from '@/components/product'
 import { getFeaturedProducts } from '@/lib/api/client'
 import { getTranslations } from 'next-intl/server'
+import type { Product } from '@/lib/types'
 
 export const dynamic = 'force-dynamic' // Always fetch fresh data
 
 export default async function HomePage() {
-  const featuredProducts = await getFeaturedProducts()
+  let featuredProducts: Product[] = []
+  try {
+    featuredProducts = await getFeaturedProducts()
+  } catch (error) {
+    console.error('Failed to fetch featured products:', error)
+    // Continue with empty array - page will still render
+  }
   const t = await getTranslations('home')
   const tCommon = await getTranslations('common')
 

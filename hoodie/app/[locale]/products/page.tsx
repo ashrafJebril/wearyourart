@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
-import { getAllProducts, getAllCategories, getCategory } from '@/lib/api/client'
+import { getAllProducts, getAllCategories } from '@/lib/api/client'
 import { ProductsContent } from './ProductsContent'
+import type { Product, Category } from '@/lib/types'
 
 export const dynamic = 'force-dynamic' // Always fetch fresh data
 
@@ -13,15 +14,25 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const selectedCategory = params.category
   const selectedSubcategory = params.subcategory
 
-  // Fetch data server-side
-  const [productsResponse, categories] = await Promise.all([
-    getAllProducts({
-      category: selectedCategory,
-      subcategory: selectedSubcategory,
-      limit: 100
-    }),
-    getAllCategories(),
-  ])
+  // Fetch data server-side with error handling
+  let products: Product[] = []
+  let categories: Category[] = []
+
+  try {
+    const [productsResponse, categoriesResponse] = await Promise.all([
+      getAllProducts({
+        category: selectedCategory,
+        subcategory: selectedSubcategory,
+        limit: 100
+      }),
+      getAllCategories(),
+    ])
+    products = productsResponse.products
+    categories = categoriesResponse
+  } catch (error) {
+    console.error('Failed to fetch products or categories:', error)
+    // Continue with empty arrays - page will still render
+  }
 
   // Calculate total product count from all categories
   const totalProductCount = categories.reduce(
@@ -38,7 +49,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <Suspense fallback={<ProductsLoading />}>
       <ProductsContent
-        initialProducts={productsResponse.products}
+        initialProducts={products}
         categories={categories}
         currentCategory={currentCategory}
         selectedCategorySlug={selectedCategory}
